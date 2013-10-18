@@ -66,10 +66,14 @@ function updateGameList(data) {
         }));
 }
 
+/* Game Managers */
+
+//helper to parse a game into the model from a firebase data element
 function parseGame(data) {
     gamesModel.game().game = data.val();
 }
 
+//joins a game (swaps listener and sets model game Id)
 function joinGame(gameId) {
     if (gamesModel.game().gameId) {
         fire.child('games').child(gamesModel.game().gameId).off('value', parseGame);
@@ -80,12 +84,14 @@ function joinGame(gameId) {
     fire.child('games').child(gameId).on('value', parseGame);
 }
 
+//creates a new game
 function createGame(name,players) {
     var game = newGame(name,players);
     var gameId = fire.child('games').push(game).path.m[1];
     console.log('Added: ' + gameId);
 }
 
+//helper for creating a new game
 function newGame(name, players) {
     var playersArray = players || [];
     if (playersArray.length > 4) {
