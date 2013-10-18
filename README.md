@@ -1,6 +1,6 @@
-# ofcfl-poker
+# ofcp
 
-Open Face Chinese Poker Fantasyland
+Open Face Chinese Poker
 
 ## Documentation
 needs a FIREBASE_CONFIG.json file in the root folder that contains:

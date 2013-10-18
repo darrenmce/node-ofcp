@@ -1,6 +1,5 @@
 var express = require('express');
 var FirebaseTokenGenerator = require('firebase-token-generator');
-var _ = require('underscore');
 var fs = require('fs');
 /* Firebase */
 
@@ -13,7 +12,7 @@ var FIREBASE = {
     ROOT: FIREBASE_CONFIG.ROOT,
     SCOPE: 'ofcp',
     DEBUG: true
-}
+};
 
 var RG_ILLEGAL_FILES = /^[^\\/:\*\?"<>\|]+$/;
 /* Express Setup */
@@ -27,8 +26,7 @@ var app = express();
  * response = { token: token, root: root }
  *
  * */
-app.get('/getFireBase', function (req, res) {
-
+function getFireBase (req, res) {
     /* timestamps for expiry */
     var tokenExpiry = (new Date().getTime() / 1000) + FIREBASE.TOKEN_DURATION;
 
@@ -46,15 +44,20 @@ app.get('/getFireBase', function (req, res) {
         token: fbToken,
         root: FIREBASE.ROOT + '/' + FIREBASE.SCOPE + '/'
     });
-});
+}
+app.get('/getFireBase', getFireBase);
 
 
-app.get('/scripts/:script', function (req, res) {
+function getScript(req, res) {
     var filename = req.param('script');
-    if (!RG_ILLEGAL_FILES.test(filename)) {
+    console.log('getting script: ' + filename);
+    if (RG_ILLEGAL_FILES.test(filename)) {
         res.sendfile(__dirname + '/app/scripts/js/' + filename);
+    } else {
+        res.send(403, 'Invalid Script: '+filename);
     }
-});
+}
+app.get('/scripts/:script', getScript);
 
 app.get('/', function (req, res) {
     res.sendfile(__dirname + '/app/index.html');

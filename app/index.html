@@ -8,6 +8,18 @@
     <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
 </head>
 <body>
+
+<div>
+    <h3>New Game:</h3>
+    Game Name: <input id="txt_createGame" type="text" maxlength="20"/><br/>
+    Player 1: <input class="playerInput" id="txt_player1" type="text" maxlength="20"/><br/>
+    Player 2: <input class="playerInput" id="txt_player2" type="text" maxlength="20"/><br/>
+    Player 3: <input class="playerInput" id="txt_player3" type="text" maxlength="20"/><br/>
+    Player 4: <input class="playerInput" id="txt_player4" type="text" maxlength="20"/><br/>
+    <button id="btn_createGame">Create</button>
+
+</div>
+
 <div>
     <h3>Games:</h3>
     <ul id="gameList" data-bind="foreach:{data: gameList, afterRender: formatButtons}">
@@ -17,80 +29,7 @@
     </ul>
 </div>
 
-<script>
-    //get Auth token
-    var server = 'http://localhost:3000';
-    var fire;
+<script src="scripts/main.js"></script>
 
-    $.getJSON(server + '/getFireBase', function (resp) {
-        if (resp.root && resp.token) {
-            fire = new Firebase(resp.root);
-            fire.auth(resp.token, function (err) {
-                if (err) {
-                    //handle auth failure
-                    console.log('Authentication with Firebase failed');
-                } else {
-                    //start the app!
-                    startApp(fire);
-                }
-            })
-        } else {
-            //handle node failure
-            console.log('getFireBase node response failure');
-        }
-    });
-
-    // create the game model and apply knockout bindings
-
-    //knockout game model
-    var gamesModel = {
-        gameList: ko.observableArray(),
-        game: ko.observable({})
-    }
-
-
-    ko.applyBindings(gamesModel);
-
-
-    /* start the App with a firebase connection */
-    function startApp() {
-        var games = fire.child('games');
-        games.on('value', updateGameList);
-    }
-
-    function updateGameList(data) {
-        //update gameList
-        gamesModel.gameList(
-                _.map(data.val(), function (data, key) {
-                    return {gameId: key, name: data.name || 'untitled'};
-                })
-        );
-    }
-
-    function addGame(name) {
-        var games = fire.child('games');
-        var newGame = games.push({'name': name}).path.m[1];
-        console.log('Added: ' + newGame);
-    }
-
-    function OfpcGame(gameId) {
-        var self = this;
-
-        self.game = null;
-        //retrieve the game from firebase
-        self.gameRef = fire.child('games').child(gameId);
-        self.gameRef.on('value', function (data) {
-            self.game = data.val();
-        });
-    }
-
-    function formatButtons(data) {
-        $(data[1]).find('button').on('click', function (ev) {
-            ev.preventDefault();
-            gamesModel.game(new OfpcGame(this.getAttribute('data-gameId')));
-        });
-    }
-
-</script>
 </body>
 </html>
