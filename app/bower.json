@@ -1,0 +1,22 @@
+{
+    "name": "Open Face Chinese Poker",
+    "version": "0.0.1",
+    "homepage": "https://github.com/darrenmce/node-ofcfl-poker",
+    "authors": [
+        "Darren <darren.mcelligott@gmail.com>"
+    ],
+    "main": "index.html",
+    "license": "MIT",
+    "dependencies": {
+        "jquery": "2.0.2",
+        "knockout": "2.2.1"
+    },
+    "private": true,
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ]
+}

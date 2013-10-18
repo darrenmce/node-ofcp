@@ -1,4 +1,27 @@
-node-ofcfl-poker
-================
+# ofcfl-poker
 
-Node Open Face Chinese Poker Fantasyland
+Open Face Chinese Poker Fantasyland
+
+## Getting Started
+Install the module with: `npm install ofcfl-poker`
+
+```javascript
+var ofcfl_poker = require('ofcfl-poker');
+ofcfl_poker.awesome(); // "awesome"
+```
+
+## Documentation
+_(Coming soon)_
+
+## Examples
+_(Coming soon)_
+
+## Contributing
+In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
+
+## Release History
+_(Nothing yet)_
+
+## License
+Copyright (c) 2013 Darren  
+Licensed under the MIT license.
