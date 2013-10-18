@@ -2,22 +2,18 @@
 
 Open Face Chinese Poker Fantasyland
 
-## Getting Started
-Install the module with: `npm install ofcfl-poker`
-
-```javascript
-var ofcfl_poker = require('ofcfl-poker');
-ofcfl_poker.awesome(); // "awesome"
-```
-
 ## Documentation
-_(Coming soon)_
+needs a FIREBASE_CONFIG.json file in the root folder that contains:
+
+```
+{
+    "ROOT": "https://<YOURFIREBASE>.firebaseio.com", 
+    "SECRET": "YOUR SECRET TO GENERATE AUTH TOKENS"
+}
+```
 
 ## Examples
 _(Coming soon)_
-
-## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
 _(Nothing yet)_
