@@ -26,7 +26,7 @@ var app = express();
  * response = { token: token, root: root }
  *
  * */
-function getFireBase (req, res) {
+function getFireBase(req, res) {
     /* timestamps for expiry */
     var tokenExpiry = (new Date().getTime() / 1000) + FIREBASE.TOKEN_DURATION;
 
@@ -52,12 +52,13 @@ function getScript(req, res) {
     var filename = req.param('script');
     console.log('getting script: ' + filename);
     if (RG_ILLEGAL_FILES.test(filename)) {
-        res.sendfile(__dirname + '/app/scripts/js/' + filename);
+        res.sendfile(__dirname + (req.param('vendor') ? '/app/scripts/js/vendor/' : '/app/scripts/js/') + filename);
     } else {
-        res.send(403, 'Invalid Script: '+filename);
+        res.send(403, 'Invalid Script: ' + filename);
     }
 }
 app.get('/scripts/:script', getScript);
+app.get('/scripts/:vendor/:script', getScript);
 
 app.get('/', function (req, res) {
     res.sendfile(__dirname + '/app/index.html');

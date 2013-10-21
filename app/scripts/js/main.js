@@ -3,8 +3,12 @@ var fire;
 
 var gamesModel = {
     gameList: ko.observableArray(),
-    game: ko.observable({})
+    game: ko.observable({}),
+    gameId: ko.observable()
 };
+
+/* Current Game */
+var currentGame = {};
 
 $(function () {
 
@@ -30,24 +34,30 @@ $(function () {
     //apply knockout bindings
     ko.applyBindings(gamesModel);
 
+    gamesModel.game.subscribe(gameParse);
+
+
     /* attach on-ready handlers */
 
     // Create Game Button
     $('#btn_createGame').on('click', function (ev) {
         ev.preventDefault();
         var gameInput = $('#txt_createGame');
-        var players=[];
-        $('.playerInput').each(function() {
-            if ($(this).val().trim().length !== 0) {
-                players.push($(this).val());
-            }
-        });
-        createGame(gameInput.val(),players);
+        createGame(gameInput.val());
         gameInput.val('');
-        $('.playerInput').val('');
     });
 
+    $('#btn_test').on('click', function (ev) {
+        ev.preventDefault();
+        var data = $('#test').val();
 
+        currentGame.game.addPlayer(data);
+    });
+
+    $('#btn_test2').on('click', function (ev) {
+        ev.preventDefault();
+        gameSync();
+    });
 
     //
 
@@ -66,46 +76,43 @@ function updateGameList(data) {
         }));
 }
 
+function gameSync() {
+    var gameData = currentGame.game.getData();
+    gamesModel.game({gameId: currentGame.gameId, game: gameData});
+    fire.child('games').child(currentGame.gameId).set(gameData);
+}
+
+
+function gameParse(data) {
+    if (currentGame.game) {
+        console.log(data.game);
+        currentGame.game.setData(data.game);
+    } else {
+        currentGame.game = new Game(data.game);
+    }
+}
+
 /* Game Managers */
 
 //helper to parse a game into the model from a firebase data element
-function parseGame(data) {
-    gamesModel.game().game = data.val();
+function parseFireGame(data) {
+    gamesModel.game({gameId: currentGame.gameId, game: data.val()});
 }
 
 //joins a game (swaps listener and sets model game Id)
 function joinGame(gameId) {
+    currentGame.gameId = gameId;
+
     if (gamesModel.game().gameId) {
-        fire.child('games').child(gamesModel.game().gameId).off('value', parseGame);
+        fire.child('games').child(gamesModel.game().gameId).off('value', parseFireGame);
     }
-    gamesModel.game({
-        gameId: gameId
-    });
-    fire.child('games').child(gameId).on('value', parseGame);
+    fire.child('games').child(gameId).on('value', parseFireGame);
 }
 
 //creates a new game
-function createGame(name,players) {
-    var game = newGame(name,players);
-    var gameId = fire.child('games').push(game).path.m[1];
-    console.log('Added: ' + gameId);
-}
-
-//helper for creating a new game
-function newGame(name, players) {
-    var playersArray = players || [];
-    if (playersArray.length > 4) {
-        console.warn('cannot create a game with more than 4 players, you idiot.');
-        return false;
-    } else {
-        return {
-            name: name,
-            deck: new Deck(),
-            players: playersArray.map(function (name) {
-                return new Player(name);
-            })
-        };
-    }
+function createGame(name) {
+    currentGame.game = new Game({name: name});
+    currentGame.gameId = fire.child('games').push(currentGame.game.getData()).name();
 }
 
 
@@ -116,74 +123,6 @@ function formatButtons(data) {
     });
 }
 
-var Deck = function () {
-    this.cards = [
-        "2c", "2d", "2h", "2s",
-        "3c", "3d", "3h", "3s",
-        "4c", "4d", "4h", "4s",
-        "5c", "5d", "5h", "5s",
-        "6c", "6d", "6h", "6s",
-        "7c", "7d", "7h", "7s",
-        "8c", "8d", "8h", "8s",
-        "9c", "9d", "9h", "9s",
-        "tc", "td", "th", "ts",
-        "jc", "jd", "jh", "js",
-        "qc", "qd", "qh", "qs",
-        "kc", "kd", "kh", "ks",
-        "ac", "ad", "ah", "as"
-    ];
-}
 
-Deck.prototype = {
-    /* draw numCards random cards from the deck
-     *  returns array */
-    draw: function (numCards) {
-        var self = this;
-        var num = numCards || 1;
-        if (self.cards.length >= num) {
-            var draw = [];
-            for (var i = 0; i < num; i++) {
-                var pos = _.random(0, self.cards.length - 1);
-                var card = self.cards.splice(pos, 1)[0];
-                draw.push(card);
-            }
-            return draw;
-        } else {
-            return false;
-        }
 
-    },
-    //useless, but for the superstitious
-    shuffle: function () {
-        this.cards = _.shuffle(this.cards);
-    }
-};
-
-function Player(name) {
-    this.name = name;
-    this.backRow = [];
-    this.midRow = [];
-    this.frontRow = [];
-    this.unplayed = [];
-}
-Player.prototype = {
-    /* plays the card to a row
-     * row: 0 = back, 1 = mid, 2 = front
-     *
-     * returns boolean based on success
-     * */
-    playCard: function (row, card) {
-        var self = this;
-        var rowArray = row === 0 ? self.backRow : (row === 1 ? self.midRow : self.frontRow);
-        var maxSize = row === 2 ? 3 : 5;
-        if (rowArray.length < maxSize) {
-            rowArray.push(card);
-            return true;
-        } else {
-            return false;
-        }
-    },
-    drawCard: function (num) {
-    }
-}
 

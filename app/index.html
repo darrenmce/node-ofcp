@@ -2,21 +2,20 @@
 <html>
 <head>
     <title>OPEN FACE CHINESE POKER!!!!!!!!!!</title>
-    <script type="text/javascript" src="https://cdn.firebase.com/v0/firebase.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
-    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+    <script src="scripts/vendor/firebase.js"></script>
+    <script src="scripts/vendor/jquery.js"></script>
+    <script src="scripts/vendor/knockout-2.3.0.js"></script>
+    <script src="scripts/vendor/underscore.js"></script>
 </head>
 <body>
 
 <div>
     <h3>New Game:</h3>
     Game Name: <input id="txt_createGame" type="text" maxlength="20"/><br/>
-    Player 1: <input class="playerInput" id="txt_player1" type="text" maxlength="20"/><br/>
-    Player 2: <input class="playerInput" id="txt_player2" type="text" maxlength="20"/><br/>
-    Player 3: <input class="playerInput" id="txt_player3" type="text" maxlength="20"/><br/>
-    Player 4: <input class="playerInput" id="txt_player4" type="text" maxlength="20"/><br/>
     <button id="btn_createGame">Create</button>
+ Test:  <input class="test" id="test" type="text" maxlength="20"/><br/>
+    <button id="btn_test">Test</button>
+    <button id="btn_test2">Test2</button>
 
 </div>
 
@@ -29,6 +28,9 @@
     </ul>
 </div>
 
+<script src="scripts/deck.js"></script>
+<script src="scripts/player.js"></script>
+<script src="scripts/game.js"></script>
 <script src="scripts/main.js"></script>
 
 </body>
