@@ -8,18 +8,14 @@
     <script src="scripts/vendor/underscore.js"></script>
 </head>
 <body>
-
-<div>
+<button id="btn_logout">Logout</button>
+<div id="div_createGame">
     <h3>New Game:</h3>
     Game Name: <input id="txt_createGame" type="text" maxlength="20"/><br/>
     <button id="btn_createGame">Create</button>
- Test:  <input class="test" id="test" type="text" maxlength="20"/><br/>
-    <button id="btn_test">Test</button>
-    <button id="btn_test2">Test2</button>
-
 </div>
 
-<div>
+<div id="div_gameList">
     <h3>Games:</h3>
     <ul id="gameList" data-bind="foreach:{data: gameList, afterRender: formatButtons}">
         <li>

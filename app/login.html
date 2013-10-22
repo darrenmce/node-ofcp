@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Screen</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+</head>
+<body>
+
+<div>
+    <h3>Login:</h3>
+    User Name: <input id="txt_username" type="text" maxlength="20"/><br/>
+    Password: <input id="txt_password" type="password" maxlength="20"/><br/>
+    <button id="btn_login">Login</button>
+    <div id="loginResult"></div>
+</div>
+
+<script>
+    var server = 'http://localhost:3000';
+
+    $('#btn_login').on('click', function () {
+        $('#loginResult').html('');
+
+        $.post(server + '/login', {username: $('#txt_username').val().trim(), password: $('#txt_password').val().trim()},function () {
+            location.reload(true);
+        }).fail(function () {
+                    $('#loginResult').html($('<h3>Login Failed.</h3>').css('color', 'red'));
+                });
+    })
+</script>
+
+</body>
+</html>

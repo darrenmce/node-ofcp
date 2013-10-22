@@ -3,39 +3,50 @@ var fire;
 
 var gamesModel = {
     gameList: ko.observableArray(),
-    game: ko.observable({}),
-    gameId: ko.observable()
+    game: ko.observable({})
 };
 
 /* Current Game */
 var currentGame = {};
 
+/* My username */
+var username;
+
+
 $(function () {
 
     //get Auth token
     $.getJSON(server + '/getFireBase', function (resp) {
-        if (resp.root && resp.token) {
+        console.log(resp);
+        if (resp.username && resp.root && resp.token) {
             fire = new Firebase(resp.root);
             fire.auth(resp.token, function (err) {
                 if (err) {
                     //handle auth failure
-                    console.log('Authentication with Firebase failed');
+                    console.error('Authentication with Firebase failed');
                 } else {
                     //start the app!
+                    username = resp.username;
                     startApp(fire);
                 }
             });
         } else {
             //handle node failure
-            console.log('getFireBase node response failure');
+            console.error('getFireBase node response failure');
         }
     });
+
+});
+
+/* start the App with a firebase connection */
+function startApp() {
+    var games = fire.child('games');
+    games.on('value', updateGameList);
 
     //apply knockout bindings
     ko.applyBindings(gamesModel);
 
     gamesModel.game.subscribe(gameParse);
-
 
     /* attach on-ready handlers */
 
@@ -47,25 +58,16 @@ $(function () {
         gameInput.val('');
     });
 
-    $('#btn_test').on('click', function (ev) {
+    $('#btn_logout').text('Logout [ '+username+' ]').on('click', function (ev) {
         ev.preventDefault();
-        var data = $('#test').val();
-
-        currentGame.game.addPlayer(data);
+        $.getJSON(server+'/logout', function(resp){
+            if(resp.logout) {
+                location.reload(true);
+            } else {
+                console.error('Logout Failed: '+ resp);
+            }
+        });
     });
-
-    $('#btn_test2').on('click', function (ev) {
-        ev.preventDefault();
-        gameSync();
-    });
-
-    //
-
-});
-/* start the App with a firebase connection */
-function startApp() {
-    var games = fire.child('games');
-    games.on('value', updateGameList);
 }
 
 function updateGameList(data) {
@@ -111,7 +113,7 @@ function joinGame(gameId) {
 
 //creates a new game
 function createGame(name) {
-    currentGame.game = new Game({name: name});
+    currentGame.game = new Game(username, {name: name});
     currentGame.gameId = fire.child('games').push(currentGame.game.getData()).name();
 }
 

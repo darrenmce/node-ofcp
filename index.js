@@ -17,6 +17,47 @@ var FIREBASE = {
 var RG_ILLEGAL_FILES = /^[^\\/:\*\?"<>\|]+$/;
 /* Express Setup */
 var app = express();
+/* set up cookies for session */
+app.use(express.cookieParser());
+app.use(express.session({secret: 'DUMMYSECRET12345'}));
+
+/* set up body parser */
+app.use(express.bodyParser());
+
+/* login :  Logs into the app
+ * */
+
+function login(req, res) {
+    if (req.body) {
+        var username = req.body.username || false;
+        var password = req.body.password || '';
+        //test login only for now
+        if (username === 'test' && password === 'test') {
+            //set session
+            req.session.username = username;
+            res.send({
+                username: username
+            });
+        } else {
+            res.send(403, 'Log in failed.');
+        }
+    } else {
+        res.send(403, 'Log in failed.');
+    }
+}
+app.post('/login', login);
+
+/* logout :  Logs out of the app
+ * */
+function logout(req,res) {
+    console.log('Logging out: ' + req.session.username);
+    req.session.username = null;
+    console.log('logged out?: ' + req.session.username);
+
+    res.send({logout: true});
+}
+app.get('/logout', logout);
+
 
 /* getFireBase :  Firebase Authentication Token + Root URL
  *
@@ -27,41 +68,58 @@ var app = express();
  *
  * */
 function getFireBase(req, res) {
-    /* timestamps for expiry */
-    var tokenExpiry = (new Date().getTime() / 1000) + FIREBASE.TOKEN_DURATION;
+    if (req.session.username) {
+        console.log('Generating Firebase Token for: ' + req.session.username);
+        /* timestamps for expiry */
+        var tokenExpiry = (new Date().getTime() / 1000) + FIREBASE.TOKEN_DURATION;
 
-    /* generate a token to be given */
-    var fbToken = FIREBASE.tokenGenerator.createToken({
-        root: FIREBASE.SCOPE,
-        read: true,
-        write: true
-    }, {
-        expires: tokenExpiry,
-        debug: FIREBASE.DEBUG
-    });
+        /* generate a token to be given */
+        var fbToken = FIREBASE.tokenGenerator.createToken({
+            root: FIREBASE.SCOPE,
+            read: true,
+            write: true,
+            username: req.session.username
+        }, {
+            expires: tokenExpiry,
+            debug: FIREBASE.DEBUG
+        });
 
-    res.send({
-        token: fbToken,
-        root: FIREBASE.ROOT + '/' + FIREBASE.SCOPE + '/'
-    });
+        res.send({
+            token: fbToken,
+            root: FIREBASE.ROOT + '/' + FIREBASE.SCOPE + '/',
+            username: req.session.username
+        });
+    } else {
+        res.send(403, 'Log in first.');
+    }
 }
+
 app.get('/getFireBase', getFireBase);
 
 
 function getScript(req, res) {
-    var filename = req.param('script');
-    console.log('getting script: ' + filename);
-    if (RG_ILLEGAL_FILES.test(filename)) {
-        res.sendfile(__dirname + (req.param('vendor') ? '/app/scripts/js/vendor/' : '/app/scripts/js/') + filename);
+    if (req.session.username) {
+        var filename = req.param('script');
+        console.log('getting script: ' + filename);
+        if (RG_ILLEGAL_FILES.test(filename)) {
+            res.sendfile(__dirname + (req.param('vendor') ? '/app/scripts/js/vendor/' : '/app/scripts/js/') + filename);
+        } else {
+            res.send(403, 'Invalid Script: ' + filename);
+        }
     } else {
-        res.send(403, 'Invalid Script: ' + filename);
+        res.send(403, 'log in first.');
     }
 }
+
 app.get('/scripts/:script', getScript);
 app.get('/scripts/:vendor/:script', getScript);
 
 app.get('/', function (req, res) {
-    res.sendfile(__dirname + '/app/index.html');
+    if (req.session.username) {
+        res.sendfile(__dirname + '/app/index.html');
+    } else {
+        res.sendfile(__dirname + '/app/login.html');
+    }
 });
 
 

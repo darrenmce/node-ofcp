@@ -1,10 +1,19 @@
-var Game = function (options) {
+var Game = function (username, options) {
     var opt = options ? options : {};
+    this.username = username;
     this.setData(opt);
 }
 
 Game.prototype = {
-    addPlayer: function (name) {
+    startGame: function(first) {
+        var self = this;
+        var turn = first || _.random(0,self.players.length-1);
+        self.gameStatus.turn = self.players[turn].playerId;
+    },
+    endTurn: function() {
+        if (true) {}
+    },
+    addPlayer: function (name, playerId) {
         var self = this;
         if (self.players.length === 4) {
             console.warn('Cannot add Player. Game is Full.');
@@ -13,7 +22,12 @@ Game.prototype = {
             console.warn('Cannot add Player. Game has Started.');
             return false;
         } else {
-            var newPlayer = new Player({name: name});
+            var playerOpts = {};
+            if (name) playerOpts.name = name;
+            if (playerId) playerOpts.playerId = playerId;
+
+            var newPlayer = new Player(playerOpts);
+
             self.players.push(newPlayer);
             self.gameStatus.turnOrder.push(newPlayer.playerId);
             return true;
@@ -24,10 +38,10 @@ Game.prototype = {
             name: this.name,
             created: this.created,
             deck: this.deck.getData(),
-            players: this.players.map(function(player){
+            players: this.players.map(function (player) {
                 return player.getData();
             }),
-            gameStatus : this.gameStatus
+            gameStatus: this.gameStatus
         };
     },
     setData: function (data) {
