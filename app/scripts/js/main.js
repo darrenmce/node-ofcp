@@ -3,8 +3,7 @@ var fire;
 
 var gamesModel = {
     gameList: ko.observableArray(),
-    game: ko.observable({}),
-    abcd: ko.observable(false)
+    game: ko.observable({})
 };
 
 /* Current Game */
@@ -12,8 +11,6 @@ var currentGame = {};
 
 /* My username */
 var username;
-
-var abcd = false;
 
 $(function () {
 
