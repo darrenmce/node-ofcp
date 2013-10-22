@@ -32,7 +32,7 @@ function login(req, res) {
         var username = req.body.username || false;
         var password = req.body.password || '';
         //test login only for now
-        if (username === 'test' && password === 'test') {
+        if (username.substr(0,4) === 'test' && password === 'test') {
             //set session
             req.session.username = username;
             res.send({

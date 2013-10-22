@@ -5,17 +5,69 @@ var Game = function (username, options) {
 }
 
 Game.prototype = {
-    startGame: function(first) {
+    startGame: function (first) {
         var self = this;
-        var turn = first || _.random(0,self.players.length-1);
-        self.gameStatus.turn = self.players[turn].playerId;
+        if (!self.gameStatus.started) {
+            var self = this;
+            var turn = first || _.random(0, self.players.length - 1);
+            self.gameStatus.turn = self.players[turn].playerId;
+            self.gameStatus.started = true;
+        }
     },
-    endTurn: function() {
-        if (true) {}
+    deal: function () {
+        var self = this;
+        if (self.username === self.gameStatus.turn) {
+            if (self.gameStatus.dealtTurn) {
+                console.warn('Already dealt this turn.');
+                return false;
+            } else {
+                var currPlayer = self.getPlayer(self.gameStatus.turn);
+                var numCards = currPlayer.getDealtCards().length;
+                if (numCards === 0) {
+                    currPlayer.dealTo(self.deck.draw(5));
+                    self.gameStatus.dealtTurn = true;
+                    return true;
+                } else if (numCards < 13) {
+                    currPlayer.dealTo(self.deck.draw(1));
+                    self.gameStatus.dealtTurn = true;
+                    return true;
+                } else {
+                    console.warn('Already 13 cards dealt.');
+                    return false;
+                }
+            }
+        } else {
+            console.warn('It is not your turn.');
+            return false;
+        }
+    },
+    //get the current turn player obj
+    getPlayer: function (playerId) {
+        var self = this;
+        return $.grep(self.players, function (player) {
+            return player.playerId === playerId;
+        })[0];
+    },
+    endTurn: function () {
+        var self = this;
+        if (self.username === self.gameStatus.turn) {
+            var currPlayer = self.getPlayer(self.gameStatus.turn);
+            if (currPlayer.unplayed.length === 0) {
+                var nextTurn = (self.gameStatus.turnOrder.indexOf(self.username) + 1) % self.gameStatus.turnOrder.length;
+                self.gameStatus.turn = self.gameStatus.turnOrder[nextTurn];
+                return true;
+            } else {
+                console.warn('Cannot end turn. You must play all your cards first.');
+                return false;
+            }
+        }
     },
     addPlayer: function (name, playerId) {
         var self = this;
-        if (self.players.length === 4) {
+        if (self.getPlayer(playerId)) {
+            //already in the game
+            return true;
+        } else if (self.players.length === 4) {
             console.warn('Cannot add Player. Game is Full.');
             return false;
         } else if (self.gameStatus.started) {
@@ -65,7 +117,9 @@ Game.prototype = {
         data.gameStatus = data.gameStatus ? data.gameStatus : {};
         self.gameStatus = {
             started: data.gameStatus.started || false,
-            turnOrder: data.gameStatus.turnOrder || []
+            turnOrder: data.gameStatus.turnOrder || [],
+            turn: data.gameStatus.turn || null,
+            dealtTurn: data.gameStatus.dealtTurn || false
         }
     }
 }

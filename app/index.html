@@ -24,6 +24,18 @@
     </ul>
 </div>
 
+<div id="div_game">
+    <div id="div_players">
+        <!-- ko if: game().game && game().game.players -->
+        <ul data-bind="foreach: game().game.players">
+            <li>
+                <span data-bind="text: playerId"></span>
+            </li>
+        </ul>
+        <!-- /ko -->
+    </div>
+</div>
+
 <script src="scripts/deck.js"></script>
 <script src="scripts/player.js"></script>
 <script src="scripts/game.js"></script>

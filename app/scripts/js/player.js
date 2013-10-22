@@ -20,7 +20,15 @@ Player.prototype = {
             return false;
         }
     },
-    drawCard: function (num) {
+    dealTo: function (cards) {
+        if (cards instanceof Array) {
+            this.unplayed = this.unplayed.concat(cards);
+        } else {
+            this.unplayed.push(cards);
+        }
+    },
+    getDealtCards: function () {
+        return this.backRow.concat(this.midRow, this.frontRow, this.unplayed);
     },
     getData: function () {
         return {
@@ -32,7 +40,7 @@ Player.prototype = {
             playerId: this.playerId
         }
     },
-    setData: function(data) {
+    setData: function (data) {
         this.name = data.name || 'unnamed';
         this.backRow = data.backRow || [];
         this.midRow = data.midRow || [];

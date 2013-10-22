@@ -3,7 +3,8 @@ var fire;
 
 var gamesModel = {
     gameList: ko.observableArray(),
-    game: ko.observable({})
+    game: ko.observable({}),
+    abcd: ko.observable(false)
 };
 
 /* Current Game */
@@ -12,12 +13,12 @@ var currentGame = {};
 /* My username */
 var username;
 
+var abcd = false;
 
 $(function () {
 
     //get Auth token
     $.getJSON(server + '/getFireBase', function (resp) {
-        console.log(resp);
         if (resp.username && resp.root && resp.token) {
             fire = new Firebase(resp.root);
             fire.auth(resp.token, function (err) {
@@ -27,7 +28,7 @@ $(function () {
                 } else {
                     //start the app!
                     username = resp.username;
-                    startApp(fire);
+                    startApp();
                 }
             });
         } else {
@@ -46,6 +47,7 @@ function startApp() {
     //apply knockout bindings
     ko.applyBindings(gamesModel);
 
+    //subscribe to the local model, update local game
     gamesModel.game.subscribe(gameParse);
 
     /* attach on-ready handlers */
@@ -58,13 +60,13 @@ function startApp() {
         gameInput.val('');
     });
 
-    $('#btn_logout').text('Logout [ '+username+' ]').on('click', function (ev) {
+    $('#btn_logout').text('Logout [ ' + username + ' ]').on('click', function (ev) {
         ev.preventDefault();
-        $.getJSON(server+'/logout', function(resp){
-            if(resp.logout) {
+        $.getJSON(server + '/logout', function (resp) {
+            if (resp.logout) {
                 location.reload(true);
             } else {
-                console.error('Logout Failed: '+ resp);
+                console.error('Logout Failed: ' + resp);
             }
         });
     });
@@ -87,10 +89,15 @@ function gameSync() {
 
 function gameParse(data) {
     if (currentGame.game) {
-        console.log(data.game);
         currentGame.game.setData(data.game);
     } else {
-        currentGame.game = new Game(data.game);
+        currentGame.game = new Game(username, data.game);
+        //join the game when locally instantiating
+        currentGame.game.addPlayer(username, username);
+        gameSync();
+
+        //attach the game div
+       // $('#div_players').html('<ul data-bind="foreach: game.game.players"><li><span data-bind="text: playerId"></span></li></ul>');
     }
 }
 
@@ -104,7 +111,6 @@ function parseFireGame(data) {
 //joins a game (swaps listener and sets model game Id)
 function joinGame(gameId) {
     currentGame.gameId = gameId;
-
     if (gamesModel.game().gameId) {
         fire.child('games').child(gamesModel.game().gameId).off('value', parseFireGame);
     }
@@ -113,8 +119,7 @@ function joinGame(gameId) {
 
 //creates a new game
 function createGame(name) {
-    currentGame.game = new Game(username, {name: name});
-    currentGame.gameId = fire.child('games').push(currentGame.game.getData()).name();
+    fire.child('games').push(new Game(username, {name: name}).getData());
 }
 
 
