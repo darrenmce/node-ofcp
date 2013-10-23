@@ -2,44 +2,72 @@
 <html>
 <head>
     <title>OPEN FACE CHINESE POKER!!!!!!!!!!</title>
-    <script src="scripts/vendor/firebase.js"></script>
-    <script src="scripts/vendor/jquery.js"></script>
-    <script src="scripts/vendor/knockout-2.3.0.js"></script>
-    <script src="scripts/vendor/underscore.js"></script>
+
+    <link href="scripts/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="scripts/css/bootstrap-theme.css" rel="stylesheet" type="text/css"/>
+    <link href="scripts/css/playingCards.ui.css" rel="stylesheet" type="text/css"/>
+    <link href="scripts/css/ofcp.css" rel="stylesheet" type="text/css"/>
+
+
+    <script src="scripts/js/vendor/firebase.js"></script>
+    <script src="scripts/js/vendor/jquery.js"></script>
+    <script src="scripts/js/vendor/knockout-2.3.0.js"></script>
+    <script src="scripts/js/vendor/underscore.js"></script>
+    <script src="scripts/js/vendor/bootstrap.js"></script>
+    <script src="scripts/js/vendor/playingCards.ui.js"></script>
+
 </head>
 <body>
 <button id="btn_logout">Logout</button>
-<div id="div_createGame">
-    <h3>New Game:</h3>
-    Game Name: <input id="txt_createGame" type="text" maxlength="20"/><br/>
-    <button id="btn_createGame">Create</button>
-</div>
 
-<div id="div_gameList">
-    <h3>Games:</h3>
-    <ul id="gameList" data-bind="foreach:{data: gameList, afterRender: formatButtons}">
-        <li>
-            <button class="selectGame" data-bind="text: name, attr: {'data-gameId': gameId}"></button>
-        </li>
-    </ul>
-</div>
+<div class="container" id="div_gameSelect">
+    <div class="row" id="div_createGame">
+        <h3>New Game:</h3>
+        Game Name: <input id="txt_createGame" type="text" maxlength="20"/><br/>
+        <button id="btn_createGame">Create</button>
+    </div>
 
-<div id="div_game">
-    <div id="div_players">
-        <!-- ko if: game().game && game().game.players -->
-        <ul data-bind="foreach: game().game.players">
+    <div class="row" id="div_gameList">
+        <h3>Games:</h3>
+        <ul id="gameList" data-bind="foreach:{data: gameList, afterRender: formatButtons}">
             <li>
-                <span data-bind="text: playerId"></span>
+                <button class="selectGame" data-bind="text: name, attr: {'data-gameId': gameId}"></button>
             </li>
         </ul>
-        <!-- /ko -->
     </div>
 </div>
 
-<script src="scripts/deck.js"></script>
-<script src="scripts/player.js"></script>
-<script src="scripts/game.js"></script>
-<script src="scripts/main.js"></script>
+<div class="container" id="div_game">
+    <!-- ko if: game().game && game().game.players -->
+    <div class="row" id="div_players" data-bind="foreach: {data: game().game.players, afterRender: formatPlayer}">
+        <div class="div_player col-md-6">
+            <span data-bind="text: playerId"></span><br/>
+
+            <div class="container board">
+                <!-- ko if: $data.frontRow -->
+                <div class="row frontRow" data-bind="text: frontRow"></div>
+                <!-- /ko -->
+                <!-- ko if: $data.midRow -->
+                <div class="row midRow" data-bind="text: midRow"></div>
+                <!-- /ko -->
+                <!-- ko if: $data.backRow -->
+                <div class="row backRow" data-bind="text: backRow"></div>
+                <!-- /ko -->
+                <!-- ko if: $data.unplayed -->
+                <div class="row unplayed" data-bind="text: unplayed"></div>
+                <!-- /ko -->
+            </div>
+
+        </div>
+    </div>
+    <!-- /ko -->
+
+</div>
+
+<script src="scripts/js/deck.js"></script>
+<script src="scripts/js/player.js"></script>
+<script src="scripts/js/game.js"></script>
+<script src="scripts/js/main.js"></script>
 
 </body>
 </html>

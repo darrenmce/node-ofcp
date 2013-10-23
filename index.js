@@ -8,7 +8,7 @@ var FIREBASE_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/FIREBASE_CONFIG.j
 
 var FIREBASE = {
     tokenGenerator: new FirebaseTokenGenerator(FIREBASE_CONFIG.SECRET),
-    TOKEN_DURATION: 600, //seconds
+    TOKEN_DURATION: 3600, //seconds
     ROOT: FIREBASE_CONFIG.ROOT,
     SCOPE: 'ofcp',
     DEBUG: true
@@ -111,8 +111,38 @@ function getScript(req, res) {
     }
 }
 
-app.get('/scripts/:script', getScript);
-app.get('/scripts/:vendor/:script', getScript);
+function getCss(req, res) {
+    if (req.session.username) {
+        var filename = req.param('css');
+        console.log('getting css: ' + filename);
+        if (RG_ILLEGAL_FILES.test(filename)) {
+            res.sendfile(__dirname + '/app/scripts/css/' + filename);
+        } else {
+            res.send(403, 'Invalid Script: ' + filename);
+        }
+    } else {
+        res.send(403, 'log in first.');
+    }
+}
+
+function getFont(req, res) {
+    if (req.session.username) {
+        var filename = req.param('font');
+        console.log('getting font: ' + filename);
+        if (RG_ILLEGAL_FILES.test(filename)) {
+            res.sendfile(__dirname + '/app/scripts/fonts/' + filename);
+        } else {
+            res.send(403, 'Invalid Script: ' + filename);
+        }
+    } else {
+        res.send(403, 'log in first.');
+    }
+}
+
+app.get('/scripts/js/:script', getScript);
+app.get('/scripts/css/:css', getCss);
+app.get('/scripts/fonts/:font', getFont);
+app.get('/scripts/js/:vendor/:script', getScript);
 
 app.get('/', function (req, res) {
     if (req.session.username) {

@@ -76,7 +76,12 @@ function updateGameList(data) {
             return {gameId: key, name: data.name || 'untitled'};
         }));
 }
-
+/* gameSync
+ *
+ * sync the local game object to:
+ *   the knockout model
+ *   the firebase instance
+ * */
 function gameSync() {
     var gameData = currentGame.game.getData();
     gamesModel.game({gameId: currentGame.gameId, game: gameData});
@@ -85,16 +90,14 @@ function gameSync() {
 
 
 function gameParse(data) {
-    if (currentGame.game) {
+    if (currentGame.game && currentGame.gameId === data.gameId) {
         currentGame.game.setData(data.game);
     } else {
+        currentGame.gameId = data.gameId;
         currentGame.game = new Game(username, data.game);
-        //join the game when locally instantiating
+        //try to join the game
         currentGame.game.addPlayer(username, username);
         gameSync();
-
-        //attach the game div
-       // $('#div_players').html('<ul data-bind="foreach: game.game.players"><li><span data-bind="text: playerId"></span></li></ul>');
     }
 }
 
@@ -102,15 +105,16 @@ function gameParse(data) {
 
 //helper to parse a game into the model from a firebase data element
 function parseFireGame(data) {
-    gamesModel.game({gameId: currentGame.gameId, game: data.val()});
+    gamesModel.game({gameId: data.name(), game: new Game(username,data.val()).getData()});
 }
 
 //joins a game (swaps listener and sets model game Id)
 function joinGame(gameId) {
-    currentGame.gameId = gameId;
+    //remove listener for any previous game
     if (gamesModel.game().gameId) {
         fire.child('games').child(gamesModel.game().gameId).off('value', parseFireGame);
     }
+    //add listener for this game
     fire.child('games').child(gameId).on('value', parseFireGame);
 }
 
@@ -127,6 +131,59 @@ function formatButtons(data) {
     });
 }
 
+function formatPlayer(data) {
+
+    var player = _.find(data, function (ele) {
+        return $(ele).hasClass('div_player');
+    }), board;
+
+    if (player) {
+        board = $(player).find('.board');
+    }
+
+    if (board) {
+        var front = $(board).find('.frontRow')
+            , mid = $(board).find('.midRow')
+            , back = $(board).find('.backRow')
+            , unplayed = $(board).find('.unplayed');
+
+        function populateCards(pair) {
+            var row = pair[0], size = pair[1]
+                , HTML = ''
+                , rowData = row.text().split(','),
+                cardCount = 0;
+
+            rowData.forEach(function (card) {
+                if (card.length === 2) {
+                    cardCount++;
+                    HTML += cardHTML(card);
+                }
+            });
+            var buffer = size - cardCount;
+
+            for (var i = 0; i < buffer; i++) {
+                HTML += cardHTML();
+            }
+            row.html(HTML);
+        }
+
+        [
+            [front, 3],
+            [mid, 5],
+            [back, 5],
+            [unplayed, 5]
+        ].forEach(populateCards);
+
+    }
+}
+
+function cardHTML(card) {
+    if (card) {
+        return new playingCard(card).getHTML();
+    } else {
+        return '<div class="playingCard"></div>';
+    }
+}
 
 
 
