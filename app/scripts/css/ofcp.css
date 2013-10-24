@@ -3,3 +3,19 @@
     border-radius: 5px;
     padding: 5px;
 }
+
+.dragover {
+    background-color: green !important;
+}
+.playable {
+    cursor: pointer;
+}
+.player_them {
+    color: maroon;
+}
+.player_you {
+    color: green;
+}
+.player_you:after {
+    content: ' [YOU]';
+}

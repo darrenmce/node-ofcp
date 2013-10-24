@@ -105,7 +105,7 @@ function gameParse(data) {
 
 //helper to parse a game into the model from a firebase data element
 function parseFireGame(data) {
-    gamesModel.game({gameId: data.name(), game: new Game(username,data.val()).getData()});
+    gamesModel.game({gameId: data.name(), game: new Game(username, data.val()).getData()});
 }
 
 //joins a game (swaps listener and sets model game Id)
@@ -148,23 +148,37 @@ function formatPlayer(data) {
             , unplayed = $(board).find('.unplayed');
 
         function populateCards(pair) {
+
             var row = pair[0], size = pair[1]
-                , HTML = ''
                 , rowData = row.text().split(','),
                 cardCount = 0;
 
+            row.empty();
+
             rowData.forEach(function (card) {
                 if (card.length === 2) {
+                    var cardEle = $(cardHTML(card));
+                    cardEle.attr('data-card', card);
                     cardCount++;
-                    HTML += cardHTML(card);
+                    //set to draggable if unplayed and your hand
+                    if (row.hasClass('unplayed') && row.attr('data-username') === username) {
+                        cardEle.prop('draggable', true);
+                        cardEle.attr('ondragstart', 'dragCard(event)');
+                        cardEle.addClass('playable');
+                    }
+                    row.append(cardEle);
                 }
             });
             var buffer = size - cardCount;
 
             for (var i = 0; i < buffer; i++) {
-                HTML += cardHTML();
+                var cardEle = $(cardHTML());
+                cardEle.attr('ondrop', 'dropCard(event)');
+                cardEle.attr('ondragover', 'dragOver(event)');
+                cardEle.attr('ondragleave', 'dragLeave(event)');
+                cardEle.attr('data-card', 'empty');
+                row.append(cardEle);
             }
-            row.html(HTML);
         }
 
         [
@@ -185,5 +199,49 @@ function cardHTML(card) {
     }
 }
 
+function dropCard(ev) {
+    var $row = $(ev.target).parent()
+        , rowNum, row
+        , card = ev.dataTransfer.getData("card");
+
+    if ($row.hasClass('frontRow')) {
+        row = 'frontRow';
+        rowNum = 2;
+    } else if ($row.hasClass('midRow')) {
+        row = 'frontRow';
+        rowNum = 1;
+    } else {
+        row = 'frontRow';
+        rowNum = 0;
+    }
+
+    /* Play the card */
+    var player = currentGame.game.getPlayer(username);
+    player.playCard(rowNum,card);
+    var discards = player.turnNumber > 1 ? 1 : 0;
+
+    /* End the turn if all cards played */
+    if (player.unplayed.length === discards) {
+        currentGame.game.endTurn();
+    }
+    /* sync the game */
+    gameSync();
+
+}
+function dragOver(ev) {
+    $(ev.target).parent().addClass('dragover');
+    $(ev.target).parent().children().addClass('dragover');
+    ev.preventDefault();
+}
+function dragLeave(ev) {
+    $(ev.target).parent().removeClass('dragover');
+    $(ev.target).parent().children().removeClass('dragover');
+
+    ev.preventDefault();
+}
+
+function dragCard(ev) {
+    ev.dataTransfer.setData("card", ev.target.getAttribute('data-card'));
+}
 
 

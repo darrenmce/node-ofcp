@@ -11,12 +11,17 @@ Player.prototype = {
      * */
     playCard: function (row, card) {
         var self = this;
-        var rowArray = row === 0 ? self.backRow : (row === 1 ? self.midRow : self.frontRow);
-        var maxSize = row === 2 ? 3 : 5;
-        if (rowArray.length < maxSize) {
+        var rowArray = row === 0 ? self.backRow : (row === 1 ? self.midRow : self.frontRow)
+            , maxSize = row === 2 ? 3 : 5
+            , unplayedIndex = self.unplayed.indexOf(card);
+        if (rowArray.length < maxSize && unplayedIndex >= 0 && (self.turnNumber === 1 || self.unplayed.length >= 2)) {
+            //add to row
             rowArray.push(card);
+            //remove from unplayed
+            self.unplayed.splice(unplayedIndex,1);
             return true;
         } else {
+            console.warn('Cannot play card, you do not have this card or the row is full.')
             return false;
         }
     },
@@ -37,7 +42,9 @@ Player.prototype = {
             midRow: this.midRow,
             frontRow: this.frontRow,
             unplayed: this.unplayed,
-            playerId: this.playerId
+            playerId: this.playerId,
+            turnNumber: this.turnNumber,
+            fantasyland: this.fantasyland
         }
     },
     setData: function (data) {
@@ -47,5 +54,7 @@ Player.prototype = {
         this.frontRow = data.frontRow || [];
         this.unplayed = data.unplayed || [];
         this.playerId = data.playerId || _.uniqueId('player_');
+        this.turnNumber = data.turnNumber || 1;
+        this.fantasyland = data.fantasyland || false;
     }
 }

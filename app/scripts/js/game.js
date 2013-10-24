@@ -16,30 +16,32 @@ Game.prototype = {
     },
     deal: function () {
         var self = this;
-        if (self.username === self.gameStatus.turn) {
-            if (self.gameStatus.dealtTurn) {
-                console.warn('Already dealt this turn.');
-                return false;
-            } else {
-                var currPlayer = self.getPlayer(self.gameStatus.turn);
-                var numCards = currPlayer.getDealtCards().length;
-                if (numCards === 0) {
+
+        if (self.gameStatus.dealtTurn) {
+            console.warn('Already dealt this turn.');
+            return false;
+        } else {
+            var currPlayer = self.getPlayer(self.gameStatus.turn)
+                , turnNumber = currPlayer.turnNumber;
+            if (turnNumber < 6) {
+                if (currPlayer.fantasyland) {
+                    currPlayer.dealTo(self.deck.draw(14));
+                    currPlayer.turnNumber = 5;
+                } else if (turnNumber === 1) {
                     currPlayer.dealTo(self.deck.draw(5));
                     self.gameStatus.dealtTurn = true;
                     return true;
-                } else if (numCards < 13) {
-                    currPlayer.dealTo(self.deck.draw(1));
+                } else if (turnNumber < 6) {
+                    currPlayer.dealTo(self.deck.draw(3));
                     self.gameStatus.dealtTurn = true;
                     return true;
-                } else {
-                    console.warn('Already 13 cards dealt.');
-                    return false;
                 }
+            } else {
+                console.warn('All cards dealt.');
+                return false;
             }
-        } else {
-            console.warn('It is not your turn.');
-            return false;
         }
+
     },
     //get the current turn player obj
     getPlayer: function (playerId) {
@@ -52,12 +54,23 @@ Game.prototype = {
         var self = this;
         if (self.username === self.gameStatus.turn) {
             var currPlayer = self.getPlayer(self.gameStatus.turn);
-            if (currPlayer.unplayed.length === 0) {
+            if ((currPlayer.turnNumber === 1 && currPlayer.unplayed.length === 0) ||
+                (currPlayer.turnNumber > 1 && currPlayer.unplayed.length <= 1)) {
                 var nextTurn = (self.gameStatus.turnOrder.indexOf(self.username) + 1) % self.gameStatus.turnOrder.length;
                 self.gameStatus.turn = self.gameStatus.turnOrder[nextTurn];
+                self.gameStatus.dealtTurn = false;
+                //increment the player's turn number
+                currPlayer.turnNumber++;
+
+                //discard remainder of hand
+                currPlayer.unplayed.length = 0;
+
+                //deal the next hand
+                self.deal();
+
                 return true;
             } else {
-                console.warn('Cannot end turn. You must play all your cards first.');
+                console.warn('Cannot end turn. You must play your cards first.');
                 return false;
             }
         }
@@ -67,7 +80,7 @@ Game.prototype = {
         if (self.getPlayer(playerId)) {
             //already in the game
             return true;
-        } else if (self.players.length === 4) {
+        } else if (self.players.length === 3) {
             console.warn('Cannot add Player. Game is Full.');
             return false;
         } else if (self.gameStatus.started) {

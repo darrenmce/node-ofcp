@@ -41,8 +41,9 @@
     <!-- ko if: game().game && game().game.players -->
     <div class="row" id="div_players" data-bind="foreach: {data: game().game.players, afterRender: formatPlayer}">
         <div class="div_player col-md-6">
-            <span data-bind="text: playerId"></span><br/>
-
+            <h3 class="player_them" data-bind="text: playerId, css: {player_you: playerId === username}"></h3><br/>
+            <h4 data-bind="if: playerId === $parent.game().game.gameStatus.turn && playerId === username">Your Turn</h4>
+            <h4 data-bind="if: playerId === $parent.game().game.gameStatus.turn && playerId !== username">Their Turn</h4>
             <div class="container board">
                 <!-- ko if: $data.frontRow -->
                 <div class="row frontRow" data-bind="text: frontRow"></div>
@@ -54,7 +55,7 @@
                 <div class="row backRow" data-bind="text: backRow"></div>
                 <!-- /ko -->
                 <!-- ko if: $data.unplayed -->
-                <div class="row unplayed" data-bind="text: unplayed"></div>
+                <div class="row unplayed" data-bind="text: unplayed, attr: {'data-username': playerId}"></div>
                 <!-- /ko -->
             </div>
 
