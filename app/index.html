@@ -38,6 +38,9 @@
 </div>
 
 <div class="container" id="div_game">
+    <!-- ko if: game().game && game().game.gameStatus && !game().game.gameStatus.started -->
+    <button id="startGame" onclick="startGame();">Start Game</button>
+    <!-- /ko -->
     <!-- ko if: game().game && game().game.players -->
     <div class="row" id="div_players" data-bind="foreach: {data: game().game.players, afterRender: formatPlayer}">
         <div class="div_player col-md-6">

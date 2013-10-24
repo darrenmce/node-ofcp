@@ -244,4 +244,9 @@ function dragCard(ev) {
     ev.dataTransfer.setData("card", ev.target.getAttribute('data-card'));
 }
 
+function startGame() {
+    currentGame.game.startGame();
+    currentGame.game.deal();
+    gameSync();
+}
 
