@@ -27,6 +27,14 @@ and your firebase security rules need to include the ofcp portion of:
 }
 ```
 
+to start app:
+
+```
+node index.js
+```
+
+then open your browser to http://localhost:3000
+
 ## Examples
 _(Coming soon)_
 
