@@ -6,6 +6,42 @@ var gamesModel = {
     game: ko.observable({})
 };
 
+var rules = {
+    fantasyland: function (frontRow) {
+        return frontRow.length === 3 && frontRow.reduce(function (a, b) {
+            return (a.indexOf ? a.indexOf('q') : a) + b.indexOf('q');
+        }) === -1;
+    },
+    game: {
+        maxPlayers: 3,
+        playerRules: {
+            rows: {
+                frontRow: 3,
+                midRow: 5,
+                backRow: 5
+            }
+        },
+        maxTurns: 6,
+        fantasyDraw: {
+            cards: 14,
+            discard: 1
+        },
+        firstDraw: {
+            cards: 5,
+            discard: 0
+        },
+        draw: {
+            cards: 3,
+            discard: 1
+        },
+        hide: {
+            unplayed: true,
+            turn: true,
+            previous: false
+        }
+    }
+};
+
 /* Current Game */
 var currentGame = {};
 
@@ -94,7 +130,7 @@ function gameParse(data) {
         currentGame.game.setData(data.game);
     } else {
         currentGame.gameId = data.gameId;
-        currentGame.game = new Game(username, data.game);
+        currentGame.game = new Game(username, rules, data.game);
         //try to join the game
         currentGame.game.addPlayer(username, username);
         gameSync();
@@ -105,7 +141,7 @@ function gameParse(data) {
 
 //helper to parse a game into the model from a firebase data element
 function parseFireGame(data) {
-    gamesModel.game({gameId: data.name(), game: new Game(username, data.val()).getData()});
+    gamesModel.game({gameId: data.name(), game: new Game(username, rules, data.val()).getData()});
 }
 
 //joins a game (swaps listener and sets model game Id)
@@ -120,7 +156,7 @@ function joinGame(gameId) {
 
 //creates a new game
 function createGame(name) {
-    fire.child('games').push(new Game(username, {name: name}).getData());
+    fire.child('games').push(new Game(username, rules, {name: name}).getData());
 }
 
 
@@ -140,8 +176,8 @@ function formatPlayer(data) {
     if (player) {
         board = $(player).find('.board');
     }
-
-    if (board) {
+//if game is loaded
+    if (currentGame.game && board) {
         var front = $(board).find('.frontRow')
             , mid = $(board).find('.midRow')
             , back = $(board).find('.backRow')
@@ -182,10 +218,10 @@ function formatPlayer(data) {
         }
 
         [
-            [front, 3],
-            [mid, 5],
-            [back, 5],
-            [unplayed, 5]
+            [front, currentGame.game.rules.game.playerRules.rows.frontRow],
+            [mid, currentGame.game.rules.game.playerRules.rows.midRow],
+            [back, currentGame.game.rules.game.playerRules.rows.backRow],
+            [unplayed, 0]
         ].forEach(populateCards);
 
     }
@@ -217,7 +253,7 @@ function dropCard(ev) {
 
     /* Play the card */
     var player = currentGame.game.getPlayer(username);
-    player.playCard(rowNum,card);
+    player.playCard(rowNum, card);
     var discards = player.turnNumber > 1 ? 1 : 0;
 
     /* End the turn if all cards played */

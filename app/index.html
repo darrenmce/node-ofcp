@@ -45,6 +45,7 @@
     <div class="row" id="div_players" data-bind="foreach: {data: game().game.players, afterRender: formatPlayer}">
         <div class="div_player col-md-6">
             <h3 class="player_them" data-bind="text: playerId, css: {player_you: playerId === username}"></h3><br/>
+            <h3 data-bind="if: fantasyland">FANTASYLAND!!</h3><br/>
             <h4 data-bind="if: playerId === $parent.game().game.gameStatus.turn && playerId === username">Your Turn</h4>
             <h4 data-bind="if: playerId === $parent.game().game.gameStatus.turn && playerId !== username">Their Turn</h4>
             <div class="container board">

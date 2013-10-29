@@ -1,6 +1,7 @@
-var Game = function (username, options) {
+var Game = function (username, rules, options) {
     var opt = options ? options : {};
     this.username = username;
+    this.rules = rules;
     this.setData(opt);
 }
 
@@ -9,6 +10,7 @@ Game.prototype = {
         var self = this;
         if (!self.gameStatus.started) {
             var self = this;
+            self.resetGame();
             var turn = first || _.random(0, self.players.length - 1);
             self.gameStatus.turn = self.players[turn].playerId;
             self.gameStatus.started = true;
@@ -16,6 +18,8 @@ Game.prototype = {
     },
     deal: function () {
         var self = this;
+        /* game rules */
+        var gr = self.rules.game;
 
         if (self.gameStatus.dealtTurn) {
             console.warn('Already dealt this turn.');
@@ -23,21 +27,27 @@ Game.prototype = {
         } else {
             var currPlayer = self.getPlayer(self.gameStatus.turn)
                 , turnNumber = currPlayer.turnNumber;
-            if (turnNumber < 6) {
+            if (turnNumber < gr.maxTurns) {
                 if (currPlayer.fantasyland) {
-                    currPlayer.dealTo(self.deck.draw(14));
-                    currPlayer.turnNumber = 5;
+                    /* Fantasyland Draw */
+                    currPlayer.dealTo(self.deck.draw(gr.fantasyDraw.cards));
+                    currPlayer.turnNumber = gr.maxTurns - 1;
                 } else if (turnNumber === 1) {
-                    currPlayer.dealTo(self.deck.draw(5));
+                    /* Inital Draw */
+                    currPlayer.dealTo(self.deck.draw(gr.firstDraw.cards));
                     self.gameStatus.dealtTurn = true;
                     return true;
-                } else if (turnNumber < 6) {
-                    currPlayer.dealTo(self.deck.draw(3));
+                } else if (turnNumber < gr.maxTurns) {
+                    /* Regular Draw */
+                    currPlayer.dealTo(self.deck.draw(gr.draw.cards));
                     self.gameStatus.dealtTurn = true;
                     return true;
                 }
             } else {
-                console.warn('All cards dealt.');
+                /* Game is Over! */
+                console.warn('Game Over!');
+                /* Flip game 'started' back to false */
+                self.gameStatus.started = 0;
                 return false;
             }
         }
@@ -52,13 +62,24 @@ Game.prototype = {
     },
     endTurn: function () {
         var self = this;
+        /* game rules */
+        var gr = self.rules.game;
         if (self.username === self.gameStatus.turn) {
             var currPlayer = self.getPlayer(self.gameStatus.turn);
-            if ((currPlayer.turnNumber === 1 && currPlayer.unplayed.length === 0) ||
-                (currPlayer.turnNumber > 1 && currPlayer.unplayed.length <= 1)) {
+            /* Determine if turn is played out fully */
+            if ((currPlayer.fantasyland &&
+                currPlayer.turnNumber >= 1 &&
+                currPlayer.unplayed.length <= gr.fantasyDraw.discard) ||
+                (currPlayer.turnNumber === 1 &&
+                    currPlayer.unplayed.length <= gr.firstDraw.discard ) ||
+                (currPlayer.turnNumber > 1 &&
+                    currPlayer.unplayed.length <= gr.draw.discard)) {
+
+                /* Set turn to next player */
                 var nextTurn = (self.gameStatus.turnOrder.indexOf(self.username) + 1) % self.gameStatus.turnOrder.length;
                 self.gameStatus.turn = self.gameStatus.turnOrder[nextTurn];
                 self.gameStatus.dealtTurn = false;
+
                 //increment the player's turn number
                 currPlayer.turnNumber++;
 
@@ -77,10 +98,11 @@ Game.prototype = {
     },
     addPlayer: function (name, playerId) {
         var self = this;
+        var gr = self.rules.game;
         if (self.getPlayer(playerId)) {
             //already in the game
             return true;
-        } else if (self.players.length === 3) {
+        } else if (self.players.length === gr.maxPlayers) {
             console.warn('Cannot add Player. Game is Full.');
             return false;
         } else if (self.gameStatus.started) {
@@ -91,7 +113,7 @@ Game.prototype = {
             if (name) playerOpts.name = name;
             if (playerId) playerOpts.playerId = playerId;
 
-            var newPlayer = new Player(playerOpts);
+            var newPlayer = new Player(playerOpts, self.rules.game.playerRules);
 
             self.players.push(newPlayer);
             self.gameStatus.turnOrder.push(newPlayer.playerId);
@@ -121,7 +143,7 @@ Game.prototype = {
         /* Generate Players from playerData if needed */
         if (data.players && data.players instanceof Array) {
             self.players = data.players.map(function (playerData) {
-                return new Player(playerData);
+                return new Player(playerData, self.rules.game.playerRules);
             });
         } else {
             self.players = [];
@@ -134,5 +156,14 @@ Game.prototype = {
             turn: data.gameStatus.turn || null,
             dealtTurn: data.gameStatus.dealtTurn || false
         }
+    },
+    resetGame: function() {
+        var self = this;
+        /* reset players and put them in fantasyland if they made it (and werent in before)*/
+        self.players.forEach(function(player) {
+           player.resetPlayer(!player.fantasyland && self.rules.fantasyland(player.frontRow));
+        });
+        self.deck = new Deck(false);
+
     }
 }

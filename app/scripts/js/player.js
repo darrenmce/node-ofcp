@@ -1,6 +1,6 @@
-var Player = function (options) {
+var Player = function (options, rules) {
     var opt = options ? options : {};
-
+    this.rules = rules;
     this.setData(opt);
 }
 Player.prototype = {
@@ -11,10 +11,21 @@ Player.prototype = {
      * */
     playCard: function (row, card) {
         var self = this;
-        var rowArray = row === 0 ? self.backRow : (row === 1 ? self.midRow : self.frontRow)
-            , maxSize = row === 2 ? 3 : 5
+        var rowArray, maxSize
             , unplayedIndex = self.unplayed.indexOf(card);
-        if (rowArray.length < maxSize && unplayedIndex >= 0 && (self.turnNumber === 1 || self.unplayed.length >= 2)) {
+
+        if (row === 0) {
+            rowArray = self.backRow;
+            maxSize = self.rules.rows.backRow;
+        } else if (row === 1) {
+            rowArray = self.midRow;
+            maxSize = self.rules.rows.midRow;
+        } else {
+            rowArray = self.frontRow;
+            maxSize = self.rules.rows.frontRow;
+        }
+
+        if (rowArray.length < maxSize && unplayedIndex >= 0) {
             //add to row
             rowArray.push(card);
             //remove from unplayed
@@ -31,9 +42,6 @@ Player.prototype = {
         } else {
             this.unplayed.push(cards);
         }
-    },
-    getDealtCards: function () {
-        return this.backRow.concat(this.midRow, this.frontRow, this.unplayed);
     },
     getData: function () {
         return {
@@ -56,5 +64,13 @@ Player.prototype = {
         this.playerId = data.playerId || _.uniqueId('player_');
         this.turnNumber = data.turnNumber || 1;
         this.fantasyland = data.fantasyland || false;
+    },
+    resetPlayer: function(fantasyland) {
+        this.backRow = [];
+        this.midRow = [];
+        this.frontRow =[];
+        this.unplayed = [];
+        this.turnNumber = 1;
+        this.fantasyland = fantasyland;
     }
 }

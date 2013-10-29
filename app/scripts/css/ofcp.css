@@ -19,3 +19,6 @@
 .player_you:after {
     content: ' [YOU]';
 }
+.unplayed {
+    height: 100px;
+}
