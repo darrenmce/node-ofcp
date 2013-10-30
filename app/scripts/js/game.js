@@ -3,13 +3,12 @@ var Game = function (username, rules, options) {
     this.username = username;
     this.rules = rules;
     this.setData(opt);
-}
+};
 
 Game.prototype = {
     startGame: function (first) {
         var self = this;
         if (!self.gameStatus.started) {
-            var self = this;
             self.resetGame();
             var turn = first || _.random(0, self.players.length - 1);
             self.gameStatus.turn = self.players[turn].playerId;
@@ -110,8 +109,12 @@ Game.prototype = {
             return false;
         } else {
             var playerOpts = {};
-            if (name) playerOpts.name = name;
-            if (playerId) playerOpts.playerId = playerId;
+            if (name) {
+                playerOpts.name = name;
+            }
+            if (playerId) {
+                playerOpts.playerId = playerId;
+            }
 
             var newPlayer = new Player(playerOpts, self.rules.game.playerRules);
 
@@ -155,15 +158,15 @@ Game.prototype = {
             turnOrder: data.gameStatus.turnOrder || [],
             turn: data.gameStatus.turn || null,
             dealtTurn: data.gameStatus.dealtTurn || false
-        }
+        };
     },
-    resetGame: function() {
+    resetGame: function () {
         var self = this;
         /* reset players and put them in fantasyland if they made it (and werent in before)*/
-        self.players.forEach(function(player) {
-           player.resetPlayer(!player.fantasyland && self.rules.fantasyland(player.frontRow));
+        self.players.forEach(function (player) {
+            player.resetPlayer(!player.fantasyland && self.rules.fantasyland(player.frontRow));
         });
         self.deck = new Deck(false);
 
     }
-}
+};

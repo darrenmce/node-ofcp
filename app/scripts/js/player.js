@@ -2,7 +2,8 @@ var Player = function (options, rules) {
     var opt = options ? options : {};
     this.rules = rules;
     this.setData(opt);
-}
+};
+
 Player.prototype = {
     /* plays the card to a row
      * row: 0 = back, 1 = mid, 2 = front
@@ -32,7 +33,7 @@ Player.prototype = {
             self.unplayed.splice(unplayedIndex,1);
             return true;
         } else {
-            console.warn('Cannot play card, you do not have this card or the row is full.')
+            console.warn('Cannot play card, you do not have this card or the row is full.');
             return false;
         }
     },
@@ -53,7 +54,7 @@ Player.prototype = {
             playerId: this.playerId,
             turnNumber: this.turnNumber,
             fantasyland: this.fantasyland
-        }
+        };
     },
     setData: function (data) {
         this.name = data.name || 'unnamed';
@@ -73,4 +74,4 @@ Player.prototype = {
         this.turnNumber = 1;
         this.fantasyland = fantasyland;
     }
-}
+};

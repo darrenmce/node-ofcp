@@ -3,18 +3,32 @@
 <head>
     <title>OPEN FACE CHINESE POKER!!!!!!!!!!</title>
 
-    <link href="scripts/css/bootstrap.css" rel="stylesheet" type="text/css"/>
-    <link href="scripts/css/bootstrap-theme.css" rel="stylesheet" type="text/css"/>
+    <!--Vendor Imports-->
+
+    <!--Development-->
+    <!--<link href="scripts/css/bootstrap.css" rel="stylesheet" type="text/css"/>-->
+    <!--<link href="scripts/css/bootstrap-theme.css" rel="stylesheet" type="text/css"/>-->
+    <!--<script src="scripts/js/vendor/firebase.js"></script>-->
+    <!--<script src="scripts/js/vendor/jquery.js"></script>-->
+    <!--<script src="scripts/js/vendor/knockout-2.3.0.js"></script>-->
+    <!--<script src="scripts/js/vendor/underscore.js"></script>-->
+    <!--<script src="scripts/js/vendor/bootstrap.js"></script>-->
+    <!--<script src="scripts/js/vendor/playingCards.ui.js"></script>-->
+
+    <!--Production-->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.firebase.com/v0/firebase.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="scripts/js/vendor/playingCards.ui.js"></script>
+
+
+    <!--App Imports-->
     <link href="scripts/css/playingCards.ui.css" rel="stylesheet" type="text/css"/>
     <link href="scripts/css/ofcp.css" rel="stylesheet" type="text/css"/>
-
-
-    <script src="scripts/js/vendor/firebase.js"></script>
-    <script src="scripts/js/vendor/jquery.js"></script>
-    <script src="scripts/js/vendor/knockout-2.3.0.js"></script>
-    <script src="scripts/js/vendor/underscore.js"></script>
-    <script src="scripts/js/vendor/bootstrap.js"></script>
-    <script src="scripts/js/vendor/playingCards.ui.js"></script>
 
 </head>
 <body>
@@ -69,10 +83,14 @@
 
 </div>
 
+<!--Development-->
 <script src="scripts/js/deck.js"></script>
 <script src="scripts/js/player.js"></script>
 <script src="scripts/js/game.js"></script>
 <script src="scripts/js/main.js"></script>
+
+<!--Production-->
+<!--<script src="scripts/js/ofcp.min.js"></script>-->
 
 </body>
 </html>

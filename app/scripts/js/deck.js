@@ -1,7 +1,7 @@
 var Deck = function (options) {
     var opt = options ? options : {};
     this.setData(opt);
-}
+};
 
 Deck.prototype = {
     /* draw numCards random cards from the deck
@@ -29,7 +29,7 @@ Deck.prototype = {
     getData: function () {
         return {
             cards: this.cards
-        }
+        };
     },
     setData: function (data) {
         this.cards = data.cards || [
@@ -47,6 +47,5 @@ Deck.prototype = {
             "kc", "kd", "kh", "ks",
             "ac", "ad", "ah", "as"
         ];
-        ;
     }
 };

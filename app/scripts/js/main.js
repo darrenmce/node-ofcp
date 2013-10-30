@@ -183,7 +183,7 @@ function formatPlayer(data) {
             , back = $(board).find('.backRow')
             , unplayed = $(board).find('.unplayed');
 
-        function populateCards(pair) {
+        var populateCards = function (pair) {
 
             var row = pair[0], size = pair[1]
                 , rowData = row.text().split(','),
@@ -215,21 +215,21 @@ function formatPlayer(data) {
                 cardEle.attr('data-card', 'empty');
                 row.append(cardEle);
             }
-        }
+        };
 
-        [
+        Array.prototype.forEach.call([
             [front, currentGame.game.rules.game.playerRules.rows.frontRow],
             [mid, currentGame.game.rules.game.playerRules.rows.midRow],
             [back, currentGame.game.rules.game.playerRules.rows.backRow],
             [unplayed, 0]
-        ].forEach(populateCards);
+        ], populateCards);
 
     }
 }
 
 function cardHTML(card) {
     if (card) {
-        return new playingCard(card).getHTML();
+        return new PlayingCard(card).getHTML();
     } else {
         return '<div class="playingCard"></div>';
     }

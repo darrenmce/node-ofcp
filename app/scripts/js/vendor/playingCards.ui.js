@@ -20,7 +20,7 @@
  */
 
 
-var playingCard = function (card) {
+var PlayingCard = function (card) {
     this.rank = card.substr(0, card.length - 1).toUpperCase();
     //change rank from T to 10
     if (this.rank === 'T') {
@@ -33,7 +33,7 @@ var playingCard = function (card) {
  *
  * @return string The HTML block to show the card
  */
-playingCard.prototype.getHTML = function () {
+PlayingCard.prototype.getHTML = function () {
     if (this.html) {
         return this.html;
     }
@@ -73,7 +73,7 @@ playingCard.prototype.getHTML = function () {
  *
  * @return string The HTML block for the middle of the card
  */
-playingCard.prototype.buildIconHTML = function () {
+PlayingCard.prototype.buildIconHTML = function () {
     if (this.rank === "A") {
         return ['<div class="suit suit0">', this.suitCode, '</div>'];
     }
