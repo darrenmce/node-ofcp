@@ -167,7 +167,7 @@ Game.prototype = {
         var self = this;
         /* reset players and put them in fantasyland if they made it (and werent in before)*/
         self.players.forEach(function (player) {
-            player.resetPlayer(!player.fantasyland && self.rules.fantasyland(player.frontRow));
+            player.resetPlayer(!player.fantasyland && self.rules.fantasyland(player.evalHands.frontRow));
         });
         self.deck = new Deck(false);
 
@@ -271,14 +271,14 @@ Game.prototype = {
                         if (typeof frontScore === 'object') {
                             //determine repeating card
                             var card = player.frontRow[0] === player.frontRow[1] ? player.frontRow[0] : player.frontRow[2];
-                            frontScore = frontScore[card];
+                            frontScore = frontScore[card.charAt(0)];
                         }
                         evalHand.bonus = {
                             frontRow: frontScore || 0,
                             //midRow & backRow
                             midRow: scoring.bonus[evalHand.midRow.handName].mid || 0,
                             backRow: scoring.bonus[evalHand.backRow.handName].back || 0
-                        }
+                        };
                         //award bonus points
                         player.addPoints(evalHand.bonus.frontRow);
                         player.addPoints(evalHand.bonus.midRow);

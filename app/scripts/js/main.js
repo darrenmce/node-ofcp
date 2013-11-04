@@ -7,10 +7,13 @@ var gamesModel = {
 };
 
 var rules = {
+    /* Fantasy Land is determined by a pair of Queens on the top or stronger */
     fantasyland: function (frontRow) {
-        return frontRow.length === 3 && frontRow.reduce(function (a, b) {
-            return (a.indexOf ? a.indexOf('q') : a) + b.indexOf('q');
-        }) === -1;
+        if (frontRow && frontRow.value) {
+            return frontRow.value >= 10393;
+        } else {
+            return false;
+        }
     },
     game: {
         maxPlayers: 3,
@@ -46,8 +49,8 @@ var rules = {
         midRow: 1,
         frontRow: 1,
         bonus: {
-            "fault" : {
-                handType: 0 ,
+            "fault": {
+                handType: 0,
                 back: 0,
                 mid: 0,
                 front: 0
@@ -123,7 +126,7 @@ var rules = {
                 front: 0
             },
             "four of a kind": {
-                handType:8,
+                handType: 8,
                 back: 4,
                 mid: 8,
                 front: 0
@@ -278,7 +281,7 @@ function formatPlayer(data) {
     if (player) {
         board = $(player).find('.board');
     }
-//if game is loaded
+    //if game is loaded
     if (currentGame.game && board) {
         var front = $(board).find('.frontRow')
             , mid = $(board).find('.midRow')
