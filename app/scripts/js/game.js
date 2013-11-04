@@ -45,8 +45,11 @@ Game.prototype = {
             } else {
                 /* Game is Over! */
                 console.warn('Game Over!');
+
+                //call gameOver handler
+                self.gameOverHandler();
                 /* Flip game 'started' back to false */
-                self.gameStatus.started = 0;
+                self.gameStatus.started = false;
                 return false;
             }
         }
@@ -168,5 +171,151 @@ Game.prototype = {
         });
         self.deck = new Deck(false);
 
+    },
+    /* If the game is finished, evaluate the hands
+     * requires a url to the evaluator service
+     * calls callback with context of response upon success, or this.error is populated upon fail
+     * */
+    evaluate: function (url, callback) {
+        var self = this;
+        if (_.every(self.players, function (player) {
+            return player.frontRow.length === player.rules.rows.frontRow &&
+                player.midRow.length === player.rules.rows.backRow &&
+                player.backRow.length === player.rules.rows.backRow;
+        })) {
+            var cardData = self.players.map(function (player) {
+                return {
+                    playerId: player.playerId,
+                    frontRow: player.frontRow,
+                    midRow: player.midRow,
+                    backRow: player.backRow
+                };
+            });
+            $.post(url, {players: cardData})
+                .done(function (resp) {
+                    callback(resp);
+                })
+                .fail(function () {
+                    callback({error: "Failed calling evaluator service"});
+                });
+        } else {
+            callback({error: "Game not over"});
+        }
+    },
+    gameOverHandler: function () {
+        var self = this;
+
+        self.evaluate(server + '/eval', function (players) {
+            if (players.error) {
+                return false;
+            } else if (players instanceof Array) {
+                var scoring = self.rules.scoring;
+
+                var winners = {
+                    frontRow: {
+                        playerId: null,
+                        value: 0
+                    },
+                    midRow: {
+                        playerId: null,
+                        value: 0
+                    },
+                    backRow: {
+                        playerId: null,
+                        value: 0
+                    }
+                };
+                //bind evaluate and bonus data to player
+                players.forEach(function (evalHand) {
+                    var player = self.getPlayer(evalHand.playerId);
+                    evalHand.bonus = {};
+                    player.evalHands = evalHand;
+
+                    /* Check if the player faulted, otherwise determine bonuses/wins */
+                    if (!player.faultHandler()) {
+
+                        //determine row winners, if a tie, set back to null
+                        if (evalHand.frontRow.value > winners.frontRow.value) {
+                            winners.frontRow = {
+                                playerId: evalHand.playerId,
+                                value: evalHand.frontRow.value
+                            };
+                        } else if (evalHand.frontRow.value === winners.frontRow.value) {
+                            winners.frontRow = {
+                                playerId: null
+                            };
+                        }
+                        if (evalHand.midRow.value > winners.midRow.value) {
+                            winners.midRow = {
+                                playerId: evalHand.playerId,
+                                value: evalHand.midRow.value
+                            };
+                        } else if (evalHand.midRow.value === winners.midRow.value) {
+                            winners.midRow = {
+                                playerId: null
+                            };
+                        }
+                        if (evalHand.backRow.value > winners.backRow.value) {
+                            winners.backRow = {
+                                playerId: evalHand.playerId,
+                                value: evalHand.backRow.value
+                            };
+                        } else if (evalHand.backRow.value === winners.backRow.value) {
+                            winners.backRow = {
+                                playerId: null
+                            };
+                        }
+
+                        //frontRow
+                        var frontScore = scoring.bonus[evalHand.frontRow.handName].front;
+                        if (typeof frontScore === 'object') {
+                            //determine repeating card
+                            var card = player.frontRow[0] === player.frontRow[1] ? player.frontRow[0] : player.frontRow[2];
+                            frontScore = frontScore[card];
+                        }
+                        evalHand.bonus = {
+                            frontRow: frontScore || 0,
+                            //midRow & backRow
+                            midRow: scoring.bonus[evalHand.midRow.handName].mid || 0,
+                            backRow: scoring.bonus[evalHand.backRow.handName].back || 0
+                        }
+                        //award bonus points
+                        player.addPoints(evalHand.bonus.frontRow);
+                        player.addPoints(evalHand.bonus.midRow);
+                        player.addPoints(evalHand.bonus.backRow);
+
+                        player.evalHands = evalHand;
+                    }
+
+                });
+
+                //bind rowWinners to gameStatus
+                self.gameStatus.winners = winners;
+
+                //award row win pts
+                if (self.gameStatus.winners.frontRow.playerId) {
+                    self.getPlayer(self.gameStatus.winners.frontRow.playerId).addPoints(self.rules.scoring.frontRow);
+                }
+                if (self.gameStatus.winners.midRow.playerId) {
+                    self.getPlayer(self.gameStatus.winners.midRow.playerId).addPoints(self.rules.scoring.midRow);
+                }
+                if (self.gameStatus.winners.backRow.playerId) {
+                    self.getPlayer(self.gameStatus.winners.backRow.playerId).addPoints(self.rules.scoring.backRow);
+                }
+                //award scoop if won
+                if (self.gameStatus.winners.frontRow.playerId &&
+                    self.gameStatus.winners.frontRow.playerId === self.gameStatus.winners.midRow.playerId &&
+                    self.gameStatus.winners.midRow.playerId === self.gameStatus.winners.backRow.playerId) {
+                    self.getPlayer(self.gameStatus.winners.frontRow.playerId).addPoints(self.rules.scoring.scoop);
+                }
+
+                //sync game
+                gameSync();
+
+            }
+            else {
+                return false;
+            }
+        });
     }
 };

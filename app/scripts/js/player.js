@@ -30,7 +30,7 @@ Player.prototype = {
             //add to row
             rowArray.push(card);
             //remove from unplayed
-            self.unplayed.splice(unplayedIndex,1);
+            self.unplayed.splice(unplayedIndex, 1);
             return true;
         } else {
             console.warn('Cannot play card, you do not have this card or the row is full.');
@@ -53,7 +53,9 @@ Player.prototype = {
             unplayed: this.unplayed,
             playerId: this.playerId,
             turnNumber: this.turnNumber,
-            fantasyland: this.fantasyland
+            fantasyland: this.fantasyland,
+            evalHands: this.evalHands,
+            totalScore: this.totalScore
         };
     },
     setData: function (data) {
@@ -65,13 +67,44 @@ Player.prototype = {
         this.playerId = data.playerId || _.uniqueId('player_');
         this.turnNumber = data.turnNumber || 1;
         this.fantasyland = data.fantasyland || false;
+        this.evalHands = data.evalHands || false;
+        this.totalScore = data.totalScore || 0;
     },
-    resetPlayer: function(fantasyland) {
+    /* Resets the player status for the next round */
+    resetPlayer: function (fantasyland) {
         this.backRow = [];
         this.midRow = [];
-        this.frontRow =[];
+        this.frontRow = [];
         this.unplayed = [];
         this.turnNumber = 1;
         this.fantasyland = fantasyland;
+        this.evalHands = false;
+    },
+    /* Returns true if a fault is deteted and handled. Required the player hands to be evaluated.*/
+    faultHandler: function () {
+        var self = this;
+        if (self.evalHands) {
+            if (self.evalHands.frontRow.value <= self.evalHands.midRow.value &&
+                self.evalHands.midRow.value <= self.evalHands.backRow.value) {
+                return false;
+            } else {
+                var fault = {
+                    handType: 0,
+                    handRank: 0,
+                    value: 0,
+                    handName: "fault"
+                };
+                //set faults
+                self.evalHands.frontRow = fault;
+                self.evalHands.midRow = fault;
+                self.evalHands.backRow = fault;
+                return true;
+            }
+        } else {
+            return false;
+        }
+    },
+    addPoints: function(points) {
+        this.totalScore += points;
     }
 };

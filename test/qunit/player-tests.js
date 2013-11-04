@@ -67,7 +67,6 @@ test("Player Play Cards", function () {
     /* Play 1 more card to full row*/
     ok(!player.playCard(2,testCards[2]),"false returned: played "+ testCards[2]+" to frontRow - row was full");
 
-
     /* Play a card you don't have */
     var prevUnplayed = player.unplayed.slice(0), prevFrontRow = player.frontRow.slice(0);
     ok(!player.playCard(2,'ks'), "false returned trying to play a card not in unplayed");

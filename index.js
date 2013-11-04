@@ -1,6 +1,7 @@
 var express = require('express');
 var FirebaseTokenGenerator = require('firebase-token-generator');
 var fs = require('fs');
+var pokerEval = require('poker-evaluator');
 /* Firebase */
 
 //Read in root and secret
@@ -138,6 +139,31 @@ function getFont(req, res) {
         res.send(403, 'log in first.');
     }
 }
+
+function evaluate(players) {
+    return players.map(function(player) {
+        return {
+            playerId: player.playerId,
+            frontRow: pokerEval.evalHand(player.frontRow),
+            midRow: pokerEval.evalHand(player.midRow),
+            backRow: pokerEval.evalHand(player.backRow)
+        };
+    });
+}
+
+function postEvaluate(req,res) {
+    if(req.session.username) {
+        if (req.body && req.body.players) {
+            res.send(evaluate(req.body.players));
+        } else {
+            res.send(500,'Incorrect');
+        }
+    } else {
+        res.send(403, 'log in first.');
+    }
+}
+
+app.post('/eval', postEvaluate);
 
 app.get('/scripts/js/:script', getScript);
 app.get('/scripts/css/:css', getCss);
