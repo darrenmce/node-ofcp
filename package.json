@@ -1,7 +1,7 @@
 {
     "name": "ofcp",
     "description": "Open Face Chinese Poker Fantasyland",
-    "version": "0.0.1",
+    "version": "0.0.1-2",
     "homepage": "https://github.com/darrenmce/node-ofcfl-poker",
     "author": {
         "name": "Darren",
@@ -25,7 +25,8 @@
         "node": ">= 0.10.0"
     },
     "scripts": {
-        "test": "grunt nodeunit"
+        "test": "grunt nodeunit",
+        "start": "node index.js"
     },
     "devDependencies": {
         "grunt-contrib-jshint": "~0.6.4",
@@ -38,7 +39,7 @@
     "keywords": [],
     "dependencies": {
         "express": "~3.4.1",
-        "firebase-token-generator": "~0.1.4",
-        "poker-evaluator": "*"
-    }
+        "firebase-token-generator": "~0.1.4"
+    },
+    "subdomain": "darrenmce-ofcp"
 }
