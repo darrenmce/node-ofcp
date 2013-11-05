@@ -3,6 +3,21 @@
 Open Face Chinese Poker
 
 ## Documentation
+
+Prior to installing node dependencies, please consider installing poker-evaluator manually (npm struggles with the large data file).
+
+to do this, create a 'node_modules' folder under the root and within it:
+
+```
+git clone https://github.com/darrenmce/poker-evaluator.git
+```
+
+Afterwards, run:
+
+```
+npm install
+```
+
 needs a FIREBASE_CONFIG.json file in the root folder that contains:
 
 ```
