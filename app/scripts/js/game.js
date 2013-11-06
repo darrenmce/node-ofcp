@@ -160,7 +160,8 @@ Game.prototype = {
             started: data.gameStatus.started || false,
             turnOrder: data.gameStatus.turnOrder || [],
             turn: data.gameStatus.turn || null,
-            dealtTurn: data.gameStatus.dealtTurn || false
+            dealtTurn: data.gameStatus.dealtTurn || false,
+            winners: data.gameStatus.winners || false
         };
     },
     resetGame: function () {
