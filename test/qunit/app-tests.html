@@ -15,16 +15,13 @@
     <script src='../../app/scripts/js/game.js'></script>
 
     <!--helpers-->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
 
     <!--qunit-->
     <script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
-
-    <!-- your tests, any and all to run with the given fixtures below -->
-    <script src="deck-tests.js"></script>
-    <script src="player-tests.js"></script>
-    <script src="game-tests.js"></script>
-
+<script>
+    console.log(_);
+</script>
 
 </head>
 <body>
@@ -35,5 +32,9 @@
     <!-- any HTML you want to be present in each test (will be reset for each test) -->
 
 </div>
+<!-- your tests, any and all to run with the given fixtures -->
+<script src="deck-tests.js"></script>
+<script src="player-tests.js"></script>
+<script src="game-tests.js"></script>
 </body>
 </html>
