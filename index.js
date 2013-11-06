@@ -1,7 +1,6 @@
 var express = require('express');
 var FirebaseTokenGenerator = require('firebase-token-generator');
 var fs = require('fs');
-//var pokerEval = require('poker-evaluator');
 var pokerEval = require('./poker-evaluator');
 /* Firebase */
 
