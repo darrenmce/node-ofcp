@@ -4,8 +4,14 @@
     <title>OPEN FACE CHINESE POKER!!!!!!!!!!</title>
 
     <!--Vendor Imports-->
+    <!--temporarily removed for dev-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css"/>
+
+    <!--FOR WEBSTORM intellisense-->
+    <!--<link href="../.css/bootstrap-3.0.0.css" rel="stylesheet" type="text/css"/>-->
+    <!--<link href="../.css/bootstrap-theme-3.0.0.css" rel="stylesheet" type="text/css"/>-->
+
     <script src="https://cdn.firebase.com/v0/firebase.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-min.js"></script>
@@ -46,33 +52,40 @@
     <div class="row" id="div_players" data-bind="foreach: {data: game().game.players, afterRender: formatPlayer}">
         <div class="div_player col-md-6">
             <h3 class="player_them" data-bind="text: playerId, css: {player_you: playerId === username}"></h3><br/>
+            <!--ko if: $data.totalScore !== 'undefined'  -->
+            <div>
+                Score:
+            <span data-bind="text: totalScore"></span>
+            </div>
+            <!-- /ko -->
             <h3 data-bind="if: fantasyland">FANTASYLAND!!</h3><br/>
             <!-- ko if: $parent.game().game.gameStatus.started -->
             <h4 data-bind="if: playerId === $parent.game().game.gameStatus.turn && playerId === username">Your Turn</h4>
             <h4 data-bind="if: playerId === $parent.game().game.gameStatus.turn && playerId !== username">Their Turn</h4>
             <!-- /ko -->
             <div class="container board">
-                <!-- ko if: $data.frontRow -->
-                <div class="row frontRow" data-bind="text: frontRow"></div>
-                <!-- /ko -->
-                <!--ko if: $data.evalHands && $data.evalHands.frontRow -->
-                <div data-bind="text: evalHands.frontRow.handName"></div>
+                <div class="row frontRow" data-bind="text: frontRow, css: {winnerRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.frontRow.playerId === playerId,
+                                                                         loserRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.frontRow.playerId !== playerId}"></div>
+                <!--ko if: !_.isEmpty($data.evalHands) && $data.evalHands.frontRow -->
+                <div>
+                    <span data-bind="text: evalHands.frontRow.handName"></span>: <span data-bind="text: evalHands.bonus.frontRow"></span>
+                </div>
                 <!--/ko -->
-                <!-- ko if: $data.midRow -->
-                <div class="row midRow" data-bind="text: midRow"></div>
-                <!-- /ko -->
-                <!--ko if: $data.evalHands && $data.evalHands.midRow -->
-                <div data-bind="text: evalHands.midRow.handName"></div>
+                <div class="row midRow" data-bind="text: midRow, css: {winnerRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.midRow.playerId === playerId,
+                                                                         loserRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.midRow.playerId !== playerId}"></div>
+                <!--ko if: !_.isEmpty($data.evalHands) && $data.evalHands.midRow -->
+                <div>
+                    <span data-bind="text: evalHands.midRow.handName"></span>: <span data-bind="text: evalHands.bonus.midRow"></span>
+                </div>
                 <!--/ko -->
-                <!-- ko if: $data.backRow -->
-                <div class="row backRow" data-bind="text: backRow"></div>
-                <!-- /ko -->
-                <!--ko if: $data.evalHands && $data.evalHands.backRow -->
-                <div data-bind="text: evalHands.backRow.handName"></div>
+                <div class="row backRow" data-bind="text: backRow, css: {winnerRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.backRow.playerId === playerId,
+                                                                         loserRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.backRow.playerId !== playerId}"></div>
+                <!--ko if: !_.isEmpty($data.evalHands) && $data.evalHands.backRow -->
+                <div>
+                    <span data-bind="text: evalHands.backRow.handName"></span>: <span data-bind="text: evalHands.bonus.backRow"></span>
+                </div>
                 <!--/ko -->
-                <!-- ko if: $data.unplayed -->
                 <div class="row unplayed" data-bind="text: unplayed, attr: {'data-username': playerId}"></div>
-                <!-- /ko -->
             </div>
 
         </div>

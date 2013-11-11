@@ -15,6 +15,7 @@ font-size: 20px;
 float: left;
 width: 3.8em;
 height: 5em;
+text-align: center; /* modified by Darren McElligott to center*/
 }
 
 .playingCard .front {

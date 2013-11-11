@@ -140,6 +140,20 @@ function getFont(req, res) {
     }
 }
 
+function getImage(req, res) {
+    if (req.session.username) {
+        var filename = req.param('image');
+        console.log('getting image: ' + filename);
+        if (RG_ILLEGAL_FILES.test(filename)) {
+            res.sendfile(__dirname + '/app/images/' + filename);
+        } else {
+            res.send(403, 'Invalid Script: ' + filename);
+        }
+    } else {
+        res.send(403, 'log in first.');
+    }
+}
+
 function evaluate(players) {
     return players.map(function(player) {
         return {
@@ -169,6 +183,7 @@ app.get('/scripts/js/:script', getScript);
 app.get('/scripts/css/:css', getCss);
 app.get('/scripts/fonts/:font', getFont);
 app.get('/scripts/js/:vendor/:script', getScript);
+app.get('/images/:image', getImage);
 
 app.get('/', function (req, res) {
     if (req.session.username) {

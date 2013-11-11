@@ -26,11 +26,17 @@ Game.prototype = {
         } else {
             var currPlayer = self.getPlayer(self.gameStatus.turn)
                 , turnNumber = currPlayer.turnNumber;
-            if (turnNumber < gr.maxTurns) {
+            if (turnNumber > 1 && currPlayer.fantasyland) {
+                /* skip the deal if fantasyland has been dealt */
+                self.gameStatus.dealtTurn = true;
+                self.endTurn(true);
+                return true;
+            } else if (turnNumber < gr.maxTurns) {
                 if (currPlayer.fantasyland) {
                     /* Fantasyland Draw */
                     currPlayer.dealTo(self.deck.draw(gr.fantasyDraw.cards));
-                    currPlayer.turnNumber = gr.maxTurns - 1;
+                    self.gameStatus.dealtTurn = true;
+                    return true;
                 } else if (turnNumber === 1) {
                     /* Inital Draw */
                     currPlayer.dealTo(self.deck.draw(gr.firstDraw.cards));
@@ -62,11 +68,12 @@ Game.prototype = {
             return player.playerId === playerId;
         })[0];
     },
-    endTurn: function () {
+    //override to allow other user to end turn
+    endTurn: function (override) {
         var self = this;
         /* game rules */
         var gr = self.rules.game;
-        if (self.username === self.gameStatus.turn) {
+        if (self.username === self.gameStatus.turn || override) {
             var currPlayer = self.getPlayer(self.gameStatus.turn);
             /* Determine if turn is played out fully */
             if ((currPlayer.fantasyland &&
@@ -77,23 +84,22 @@ Game.prototype = {
                 (currPlayer.turnNumber > 1 &&
                     currPlayer.unplayed.length <= gr.draw.discard)) {
 
-                /* Set turn to next player */
-                var nextTurn = (self.gameStatus.turnOrder.indexOf(self.username) + 1) % self.gameStatus.turnOrder.length;
-                self.gameStatus.turn = self.gameStatus.turnOrder[nextTurn];
-                self.gameStatus.dealtTurn = false;
-
                 //increment the player's turn number
                 currPlayer.turnNumber++;
 
                 //discard remainder of hand
                 currPlayer.unplayed.length = 0;
 
+                /* Set turn to next player */
+                var nextTurn = (self.gameStatus.turnOrder.indexOf(self.gameStatus.turn) + 1) % self.gameStatus.turnOrder.length;
+                self.gameStatus.turn = self.gameStatus.turnOrder[nextTurn];
+                self.gameStatus.dealtTurn = false;
+
                 //deal the next hand
                 self.deal();
 
                 return true;
             } else {
-                console.warn('Cannot end turn. You must play your cards first.');
                 return false;
             }
         }
@@ -161,7 +167,7 @@ Game.prototype = {
             turnOrder: data.gameStatus.turnOrder || [],
             turn: data.gameStatus.turn || null,
             dealtTurn: data.gameStatus.dealtTurn || false,
-            winners: data.gameStatus.winners || false
+            winners: data.gameStatus.winners || {}
         };
     },
     resetGame: function () {
@@ -170,8 +176,12 @@ Game.prototype = {
         self.players.forEach(function (player) {
             player.resetPlayer(!player.fantasyland && self.rules.fantasyland(player.evalHands.frontRow));
         });
+
+        /* Reset Deck */
         self.deck = new Deck(false);
 
+        /* Clear row winners */
+        self.gameStatus.winners = {};
     },
     /* If the game is finished, evaluate the hands
      * requires a url to the evaluator service
@@ -233,7 +243,14 @@ Game.prototype = {
                     player.evalHands = evalHand;
 
                     /* Check if the player faulted, otherwise determine bonuses/wins */
-                    if (!player.faultHandler()) {
+                    if (player.faultHandler()) {
+                        /* Fault */
+                        player.evalHands.bonus = {
+                            frontRow: 0,
+                            midRow: 0,
+                            backRow: 0
+                        };
+                    } else {
 
                         //determine row winners, if a tie, set back to null
                         if (evalHand.frontRow.value > winners.frontRow.value) {
@@ -271,8 +288,8 @@ Game.prototype = {
                         var frontScore = scoring.bonus[evalHand.frontRow.handName].front;
                         if (typeof frontScore === 'object') {
                             //determine repeating card
-                            var card = player.frontRow[0] === player.frontRow[1] ? player.frontRow[0] : player.frontRow[2];
-                            frontScore = frontScore[card.charAt(0)];
+                            var cardRank = player.frontRow[0].charAt(0) == player.frontRow[1].charAt(0) ? player.frontRow[0].charAt(0) : player.frontRow[2].charAt(0);
+                            frontScore = frontScore[cardRank];
                         }
                         evalHand.bonus = {
                             frontRow: frontScore || 0,

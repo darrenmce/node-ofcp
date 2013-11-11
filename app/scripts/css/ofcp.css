@@ -22,3 +22,19 @@
 .unplayed {
     height: 100px;
 }
+.board {
+    background-color: darkgreen;
+}
+.cardBack {
+    background-color: red;
+}
+.cardBack img {
+    height: inherit;
+    width: auto;
+}
+.winnerRow {
+    border: 10px solid green;
+}
+.loserRow {
+    border: 10px solid red;
+}

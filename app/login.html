@@ -8,16 +8,20 @@
 
 <div>
     <h3>Login:</h3>
-    User Name: <input id="txt_username" type="text" maxlength="20"/><br/>
-    Password: <input id="txt_password" type="password" maxlength="20"/><br/>
-    <button id="btn_login">Login</button>
+
+    <form>
+        User Name: <input id="txt_username" type="text" maxlength="20"/><br/>
+        Password: <input id="txt_password" type="password" maxlength="20"/><br/>
+        <button id="btn_login" type="submit">Login</button>
+    </form>
     <div id="loginResult"></div>
 </div>
 
 <script>
     var server = 'http://localhost:3000';
 
-    $('#btn_login').on('click', function () {
+    $('#btn_login').on('click', function (ev) {
+        ev.preventDefault();
         $('#loginResult').html('');
 
         $.post(server + '/login', {username: $('#txt_username').val().trim(), password: $('#txt_password').val().trim()},function () {

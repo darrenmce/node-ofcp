@@ -165,6 +165,10 @@ function formatPlayer(data) {
                         cardEle.prop('draggable', true);
                         cardEle.attr('ondragstart', 'dragCard(event)');
                         cardEle.addClass('playable');
+                    } else if (row.hasClass('unplayed')) {
+                        //hide unplayed if not yours
+                        cardEle = $(cardHTML('back'));
+                        cardEle.prop('draggable', false);
                     }
                     row.append(cardEle);
                 }
@@ -192,7 +196,9 @@ function formatPlayer(data) {
 }
 
 function cardHTML(card) {
-    if (card) {
+    if (card === 'back') {
+        return '<div class="playingCard cardBack"><img draggable="false" src="images/back.gif"/></div>';
+    } else if (card) {
         return new PlayingCard(card).getHTML();
     } else {
         return '<div class="playingCard"></div>';
@@ -218,12 +224,10 @@ function dropCard(ev) {
     /* Play the card */
     var player = currentGame.game.getPlayer(username);
     player.playCard(rowNum, card);
-    var discards = player.turnNumber > 1 ? 1 : 0;
 
-    /* End the turn if all cards played */
-    if (player.unplayed.length === discards) {
-        currentGame.game.endTurn();
-    }
+    /* Attempt to end the turn (will not succeed if turn is not complete) */
+    currentGame.game.endTurn();
+
     /* sync the game */
     gameSync();
 
