@@ -21,6 +21,6 @@ if [ "$1" != "firebase" ] && [ "$1" != "server" ]
     rm ./poker-evaluator/.gitignore
     rm ./poker-evaluator/.travis.yml
     echo "Installing Packages..."
-    npm install
+    npm install || (npm install || echo "failed twice to install packages, run 'npm install' manually and debug")
 fi
 
