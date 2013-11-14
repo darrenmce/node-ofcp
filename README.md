@@ -28,7 +28,6 @@ and your firebase security rules need to include the ofcp portion of (or just co
 Configure and Install Deps
 
 ```
-chmod +x install.sh
 ./install.sh
 ```
 
