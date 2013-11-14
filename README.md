@@ -4,28 +4,11 @@ Open Face Chinese Poker
 
 ## Documentation
 
-Instal poker-evaluator manually (npm struggles with the large data file).
+Sign up for a firebase account if you do not have one [here][http://www.firebase.com]
 
-```
-git clone https://github.com/darrenmce/poker-evaluator.git
-```
+In your forge (https://_username_.firebaseio.com/), under the Auth section you will need a Firebase Secret for a later step.
 
-Afterwards, run:
-
-```
-npm install
-```
-
-needs a FIREBASE_CONFIG.json file in the root folder that contains:
-
-```
-{
-    "ROOT": "https://<YOURFIREBASE>.firebaseio.com",
-    "SECRET": "YOUR SECRET TO GENERATE AUTH TOKENS"
-}
-```
-
-and your firebase security rules need to include the ofcp portion of:
+and your firebase security rules need to include the ofcp portion of (or just copy&paste the whole thing):
 
 ```
 {
@@ -40,13 +23,20 @@ and your firebase security rules need to include the ofcp portion of:
 }
 ```
 
+Configure and Install Deps
+
+```
+chmod +x install.sh
+./install.sh
+```
+
 to start app:
 
 ```
 node index.js
 ```
 
-then open your browser to http://localhost:3000
+then open your browser to the address/port you specified in the install script
 
 ## Examples
 _(Coming soon)_
@@ -55,5 +45,5 @@ _(Coming soon)_
 _(Nothing yet)_
 
 ## License
-Copyright (c) 2013 Darren  
+Copyright (c) 2013 Darren McElligott
 Licensed under the MIT license.
