@@ -17,9 +17,10 @@
     <div id="loginResult"></div>
 </div>
 
-<script>
-    var server = 'http://localhost:3000';
+<!-- Get Server Config -->
+<script src="config"></script>
 
+<script>
     $('#btn_login').on('click', function (ev) {
         ev.preventDefault();
         $('#loginResult').html('');

@@ -6,6 +6,7 @@ var pokerEval = require('./poker-evaluator');
 
 //Read in root and secret
 var FIREBASE_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/FIREBASE_CONFIG.json', 'utf8'));
+var SERVER_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/SERVER_CONFIG.json', 'utf8'));
 
 var FIREBASE = {
     tokenGenerator: new FirebaseTokenGenerator(FIREBASE_CONFIG.SECRET),
@@ -177,6 +178,13 @@ function postEvaluate(req,res) {
     }
 }
 
+function getConfig(req,res) {
+    res.set('Content-Type', 'text/javascript');
+    res.send('var server = "'+SERVER_CONFIG.ADDRESS+':'+SERVER_CONFIG.PORT+'";');
+}
+
+app.get('/config', getConfig);
+
 app.post('/eval', postEvaluate);
 
 app.get('/scripts/js/:script', getScript);
@@ -195,5 +203,5 @@ app.get('/', function (req, res) {
 
 
 /* Start the Express App */
-app.listen(3000);
-console.log('Listening on port 3000');
+app.listen(SERVER_CONFIG.PORT);
+console.log('Listening on port '+SERVER_CONFIG.PORT);
