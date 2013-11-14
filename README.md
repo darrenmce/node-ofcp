@@ -4,7 +4,9 @@ Open Face Chinese Poker
 
 ## Documentation
 
-Sign up for a firebase account if you do not have one [here][http://www.firebase.com]
+Sign up for a firebase account if you do not have one [here][firebase]
+
+[firebase]: http://www.firebase.com
 
 In your forge (https://_username_.firebaseio.com/), under the Auth section you will need a Firebase Secret for a later step.
 
