@@ -2,8 +2,9 @@ if [ "$1" != "server" ]
   then
     read -p "Enter your firebase url (https://username.firebaseio.com): " firebase_url
     read -p "Enter your firebase SECRET (asdf3456jkle9f....): " firebase_secret
+    read -p "Firebase debug? (y/n): " firebase_debug
     echo "Creating FIREBASE_CONFIG.json..."
-    printf "{\n\t\"ROOT\": \"$firebase_url\",\n\t\"SECRET\": \"$firebase_secret\"\n}\n" > ./FIREBASE_CONFIG.json
+    printf "{\n\t\"ROOT\": \"$firebase_url\",\n\t\"SECRET\": \"$firebase_secret\",\n\t\"DEBUG\": \"$firebase_debug\"\n}\n" > ./FIREBASE_CONFIG.json
 fi
 if [ "$1" != "firebase" ]
   then

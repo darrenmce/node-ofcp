@@ -13,7 +13,7 @@ var FIREBASE = {
     TOKEN_DURATION: 3600, //seconds
     ROOT: FIREBASE_CONFIG.ROOT,
     SCOPE: 'ofcp',
-    DEBUG: true
+    DEBUG: FIREBASE_CONFIG.DEBUG.toUpperCase() === 'Y'
 };
 
 var RG_ILLEGAL_FILES = /^[^\\/:\*\?"<>\|]+$/;
