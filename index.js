@@ -18,6 +18,10 @@ var FIREBASE = {
     DEBUG: FIREBASE_CONFIG.DEBUG.toUpperCase() === 'Y'
 };
 
+var MONGO = {
+    serverPath: "mongodb://127.0.0.1:27017/test"
+};
+
 var RG_ILLEGAL_FILES = /^[^\\/:\*\?"<>\|]+$/;
 /* Express Setup */
 var app = express();
@@ -28,11 +32,13 @@ app.use(express.session({secret: 'DUMMYSECRET12345'}));
 /* set up body parser */
 app.use(express.bodyParser());
 
-var login = new loginFunc.Login(FIREBASE);
-app.post('/login', login.login);
-app.get('/logout', login.logout);
+var login = new loginFunc(FIREBASE, MONGO);
+app.post('/login', login.login.bind(login));
+app.post('/register', login.register.bind(login));
+app.get('/logout', login.logout.bind(login));
 /* Uses context of login object */
 app.get('/getFireBase', login.getFireBase.bind(login));
+
 
 
 function getScript(req, res) {
