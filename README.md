@@ -40,7 +40,9 @@ node index.js
 then open your browser to the address/port you specified in the install script
 
 ## Examples
-_(Coming soon)_
+I run the latest version under [http://darrenmce.com][exampleurl]
+
+[exampleurl]: http://darrenmce.com
 
 ## Release History
 _(Nothing yet)_
