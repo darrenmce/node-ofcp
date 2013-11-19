@@ -1,10 +1,12 @@
+/* Deps */
 var express = require('express');
 var FirebaseTokenGenerator = require('firebase-token-generator');
 var fs = require('fs');
 var pokerEval = require('./poker-evaluator');
-/* Firebase */
 
-//Read in root and secret
+/* Lib */
+var loginFunc = require('./lib/login.js');
+
 var FIREBASE_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/FIREBASE_CONFIG.json', 'utf8'));
 var SERVER_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/SERVER_CONFIG.json', 'utf8'));
 
@@ -26,77 +28,11 @@ app.use(express.session({secret: 'DUMMYSECRET12345'}));
 /* set up body parser */
 app.use(express.bodyParser());
 
-/* login :  Logs into the app
- * */
-
-function login(req, res) {
-    if (req.body) {
-        var username = req.body.username || false;
-        var password = req.body.password || '';
-        //test login only for now
-        if (username.substr(0,4) === 'test' && password === 'test') {
-            //set session
-            req.session.username = username;
-            res.send({
-                username: username
-            });
-        } else {
-            res.send(403, 'Log in failed.');
-        }
-    } else {
-        res.send(403, 'Log in failed.');
-    }
-}
-app.post('/login', login);
-
-/* logout :  Logs out of the app
- * */
-function logout(req,res) {
-    console.log('Logging out: ' + req.session.username);
-    req.session.username = null;
-    console.log('logged out?: ' + req.session.username);
-
-    res.send({logout: true});
-}
-app.get('/logout', logout);
-
-
-/* getFireBase :  Firebase Authentication Token + Root URL
- *
- * 1) create and send a valid auth token for the firebase datasource
- * 2) send the fire base instance of the URL
- *
- * response = { token: token, root: root }
- *
- * */
-function getFireBase(req, res) {
-    if (req.session.username) {
-        console.log('Generating Firebase Token for: ' + req.session.username);
-        /* timestamps for expiry */
-        var tokenExpiry = (new Date().getTime() / 1000) + FIREBASE.TOKEN_DURATION;
-
-        /* generate a token to be given */
-        var fbToken = FIREBASE.tokenGenerator.createToken({
-            root: FIREBASE.SCOPE,
-            read: true,
-            write: true,
-            username: req.session.username
-        }, {
-            expires: tokenExpiry,
-            debug: FIREBASE.DEBUG
-        });
-
-        res.send({
-            token: fbToken,
-            root: FIREBASE.ROOT + '/' + FIREBASE.SCOPE + '/',
-            username: req.session.username
-        });
-    } else {
-        res.send(403, 'Log in first.');
-    }
-}
-
-app.get('/getFireBase', getFireBase);
+var login = new loginFunc.Login(FIREBASE);
+app.post('/login', login.login);
+app.get('/logout', login.logout);
+/* Uses context of login object */
+app.get('/getFireBase', login.getFireBase.bind(login));
 
 
 function getScript(req, res) {
@@ -156,7 +92,7 @@ function getImage(req, res) {
 }
 
 function evaluate(players) {
-    return players.map(function(player) {
+    return players.map(function (player) {
         return {
             playerId: player.playerId,
             frontRow: pokerEval.evalHand(player.frontRow),
@@ -166,21 +102,21 @@ function evaluate(players) {
     });
 }
 
-function postEvaluate(req,res) {
-    if(req.session.username) {
+function postEvaluate(req, res) {
+    if (req.session.username) {
         if (req.body && req.body.players) {
             res.send(evaluate(req.body.players));
         } else {
-            res.send(500,'Incorrect');
+            res.send(500, 'Incorrect');
         }
     } else {
         res.send(403, 'log in first.');
     }
 }
 
-function getConfig(req,res) {
+function getConfig(req, res) {
     res.set('Content-Type', 'text/javascript');
-    res.send('var server = "'+SERVER_CONFIG.ADDRESS+':'+SERVER_CONFIG.PORT+'";');
+    res.send('var server = "' + SERVER_CONFIG.ADDRESS + ':' + SERVER_CONFIG.PORT + '";');
 }
 
 app.get('/config', getConfig);
@@ -204,4 +140,4 @@ app.get('/', function (req, res) {
 
 /* Start the Express App */
 app.listen(SERVER_CONFIG.PORT);
-console.log('Listening on port '+SERVER_CONFIG.PORT);
+console.log('Listening on port ' + SERVER_CONFIG.PORT);
