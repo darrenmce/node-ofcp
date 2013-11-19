@@ -1,5 +1,7 @@
-node_modules
+node_modules/
 FIREBASE_CONFIG.json
 SERVER_CONFIG.json
-poker-evaluator
+poker-evaluator/
 .css/
+.idea/
+logs/
