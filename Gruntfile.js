@@ -16,7 +16,7 @@ module.exports = function (grunt) {
                 src: 'Gruntfile.js'
             },
             node: {
-                src: ['index.js']
+                src: ['index.js', 'lib/*.js']
             },
             app: {
                 src: ['app/scripts/js/deck.js','app/scripts/js/player.js','app/scripts/js/game.js','app/scripts/js/main.js']

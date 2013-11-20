@@ -9,6 +9,7 @@ var loginFunc = require('./lib/login.js');
 
 var FIREBASE_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/FIREBASE_CONFIG.json', 'utf8'));
 var SERVER_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/SERVER_CONFIG.json', 'utf8'));
+var MONGO_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/MONGO_CONFIG.json', 'utf8'));
 
 var FIREBASE = {
     tokenGenerator: new FirebaseTokenGenerator(FIREBASE_CONFIG.SECRET),
@@ -19,7 +20,7 @@ var FIREBASE = {
 };
 
 var MONGO = {
-    serverPath: "mongodb://127.0.0.1:27017/test"
+    serverPath: MONGO_CONFIG.SERVER + '/' + MONGO_CONFIG.DATABASE
 };
 
 var RG_ILLEGAL_FILES = /^[^\\/:\*\?"<>\|]+$/;

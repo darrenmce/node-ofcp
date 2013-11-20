@@ -288,7 +288,7 @@ Game.prototype = {
                         var frontScore = scoring.bonus[evalHand.frontRow.handName].front;
                         if (typeof frontScore === 'object') {
                             //determine repeating card
-                            var cardRank = player.frontRow[0].charAt(0) == player.frontRow[1].charAt(0) ? player.frontRow[0].charAt(0) : player.frontRow[2].charAt(0);
+                            var cardRank = player.frontRow[0].charAt(0) === player.frontRow[1].charAt(0) ? player.frontRow[0].charAt(0) : player.frontRow[2].charAt(0);
                             frontScore = frontScore[cardRank];
                         }
                         evalHand.bonus = {

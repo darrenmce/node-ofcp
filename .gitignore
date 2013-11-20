@@ -1,6 +1,7 @@
 node_modules/
 FIREBASE_CONFIG.json
 SERVER_CONFIG.json
+MONGO_CONFIG.json
 poker-evaluator/
 .css/
 .idea/
