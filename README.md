@@ -4,6 +4,10 @@ Open Face Chinese Poker
 
 ## Documentation
 
+Requires [MongoDB][mongo] (currently uses default DB at localhost with name test.. will be configurable in next commit!)
+
+[mongo]: http://mongodb.com
+
 Sign up for a firebase account if you do not have one [here][firebase]
 
 [firebase]: http://www.firebase.com
