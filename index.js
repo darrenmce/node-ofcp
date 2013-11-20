@@ -41,7 +41,6 @@ app.get('/logout', login.logout.bind(login));
 app.get('/getFireBase', login.getFireBase.bind(login));
 
 
-
 function getScript(req, res) {
     if (req.session.username) {
         var filename = req.param('script');

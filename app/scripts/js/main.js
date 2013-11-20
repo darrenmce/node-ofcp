@@ -87,9 +87,10 @@ function gameSync() {
     fire.child('games').child(currentGame.gameId).set(gameData);
 }
 
-
 function gameParse(data) {
-    if (currentGame.game && currentGame.gameId === data.gameId) {
+    if (!data.gameId) {
+        //do nothing
+    } else if (currentGame.game && currentGame.gameId === data.gameId) {
         currentGame.game.setData(data.game);
     } else {
         currentGame.gameId = data.gameId;
@@ -115,6 +116,13 @@ function joinGame(gameId) {
     }
     //add listener for this game
     fire.child('games').child(gameId).on('value', parseFireGame);
+}
+
+function leave() {
+    fire.child('games').child(gamesModel.game().gameId).off('value', parseFireGame);
+    currentGame = {};
+    gamesModel.game({});
+    console.log(gamesModel.game());
 }
 
 //creates a new game
@@ -253,3 +261,8 @@ function startGame() {
     gameSync();
 }
 
+function leaveGame() {
+    currentGame.game.removePlayer(username);
+    gameSync();
+    leave();
+}

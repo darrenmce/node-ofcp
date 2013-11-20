@@ -65,7 +65,7 @@ Game.prototype = {
     getPlayer: function (playerId) {
         var self = this;
         return $.grep(self.players, function (player) {
-            return player.playerId === playerId;
+            return player.playerId.toLowerCase() === playerId.toLowerCase();
         })[0];
     },
     //override to allow other user to end turn
@@ -130,6 +130,20 @@ Game.prototype = {
             self.players.push(newPlayer);
             self.gameStatus.turnOrder.push(newPlayer.playerId);
             return true;
+        }
+    },
+    removePlayer: function (playerId) {
+        var self = this;
+        if (self.getPlayer(playerId)) {
+            //remove the player
+            //TODO handle gameStatus changes such as turnorder and turn
+            self.players = _.reject(self.players, function(player) {
+                return player.playerId.toLowerCase() === playerId.toLowerCase();
+            });
+            return true;
+        } else {
+            //not in game
+            return false;
         }
     },
     getData: function () {
