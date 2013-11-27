@@ -134,12 +134,35 @@ Game.prototype = {
     },
     removePlayer: function (playerId) {
         var self = this;
-        if (self.getPlayer(playerId)) {
+        var player = self.getPlayer(playerId);
+        if (player) {
+
+            //handle turn
+            if (self.gameStatus.turn === playerId) {
+                //discard hand
+                player.unplayed.length = 0;
+                //end turn
+                self.endTurn();
+            }
+
+            //handle turnOrder
+            self.gameStatus.turnOrder = _.reject(self.gameStatus.turnOrder, function (turn) {
+                return turn === playerId;
+            });
+
             //remove the player
-            //TODO handle gameStatus changes such as turnorder and turn
-            self.players = _.reject(self.players, function(player) {
+            self.players = _.reject(self.players, function (player) {
                 return player.playerId.toLowerCase() === playerId.toLowerCase();
             });
+
+            //if game is now empty, clear it
+            if (self.players.length === 0) {
+                self.setData({
+                    name: self.name,
+                    created: self.created
+                });
+            }
+
             return true;
         } else {
             //not in game
@@ -342,7 +365,7 @@ Game.prototype = {
                 }
 
                 //sync game
-                gameSync();
+                GameFunc.gameSync();
 
             }
             else {

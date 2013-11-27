@@ -48,10 +48,7 @@
 <div class="container" id="div_game">
     <!-- ko if: game().game && game().game.players -->
     <!-- ko if: _.find(game().game.players, function(player) { return player.playerId === username; }) -->
-    <button id="leaveGame" onclick="leaveGame();">Leave Game</button>
-    <!-- /ko -->
-    <!-- ko if: game().game.players.length > 0 && game().game.players[0].playerId === username -->
-    <button id="deleteGame" onclick="deleteGame();">Delete Game</button>
+    <button id="leaveGame" onclick="leave();">Leave Game</button>
     <!-- /ko -->
     <!-- ko if: game().game && game().game.gameStatus && !game().game.gameStatus.started -->
     <button id="startGame" onclick="startGame();">Start Game</button>
@@ -110,6 +107,9 @@
 <script src="scripts/js/game.js"></script>
 
 <script src="scripts/js/rules.js"></script>
+
+<script src="scripts/js/util.js"></script>
+<script src="scripts/js/game-func.js"></script>
 <script src="scripts/js/main.js"></script>
 
 <!--Production-->

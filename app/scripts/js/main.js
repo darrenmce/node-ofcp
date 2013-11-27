@@ -11,6 +11,8 @@ var currentGame = {};
 /* My username */
 var username;
 
+
+//initialize
 $(function () {
 
     //get Auth token
@@ -38,13 +40,13 @@ $(function () {
 /* start the App with a firebase connection */
 function startApp() {
     var games = fire.child('games');
-    games.on('value', updateGameList);
+    games.on('value', GameFunc.updateGameList);
 
     //apply knockout bindings
     ko.applyBindings(gamesModel);
 
     //subscribe to the local model, update local game
-    gamesModel.game.subscribe(gameParse);
+    gamesModel.game.subscribe(GameFunc.gameParse);
 
     /* attach on-ready handlers */
 
@@ -52,7 +54,7 @@ function startApp() {
     $('#btn_createGame').on('click', function (ev) {
         ev.preventDefault();
         var gameInput = $('#txt_createGame');
-        createGame(gameInput.val());
+        GameFunc.createGame(gameInput.val());
         gameInput.val('');
     });
 
@@ -68,76 +70,15 @@ function startApp() {
     });
 }
 
-function updateGameList(data) {
-    //update gameList
-    gamesModel.gameList(
-        _.map(data.val(), function (data, key) {
-            return {gameId: key, name: data.name || 'untitled'};
-        }));
-}
-/* gameSync
- *
- * sync the local game object to:
- *   the knockout model
- *   the firebase instance
- * */
-function gameSync() {
-    var gameData = currentGame.game.getData();
-    gamesModel.game({gameId: currentGame.gameId, game: gameData});
-    fire.child('games').child(currentGame.gameId).set(gameData);
-}
-
-function gameParse(data) {
-    if (!data.gameId) {
-        //do nothing
-    } else if (currentGame.game && currentGame.gameId === data.gameId) {
-        currentGame.game.setData(data.game);
-    } else {
-        currentGame.gameId = data.gameId;
-        currentGame.game = new Game(username, rules, data.game);
-        //try to join the game
-        currentGame.game.addPlayer(username, username);
-        gameSync();
-    }
-}
-
-/* Game Managers */
-
-//helper to parse a game into the model from a firebase data element
-function parseFireGame(data) {
-    gamesModel.game({gameId: data.name(), game: new Game(username, rules, data.val()).getData()});
-}
-
-//joins a game (swaps listener and sets model game Id)
-function joinGame(gameId) {
-    //remove listener for any previous game
-    if (gamesModel.game().gameId) {
-        fire.child('games').child(gamesModel.game().gameId).off('value', parseFireGame);
-    }
-    //add listener for this game
-    fire.child('games').child(gameId).on('value', parseFireGame);
-}
-
-function leave() {
-    fire.child('games').child(gamesModel.game().gameId).off('value', parseFireGame);
-    currentGame = {};
-    gamesModel.game({});
-    console.log(gamesModel.game());
-}
-
-//creates a new game
-function createGame(name) {
-    fire.child('games').push(new Game(username, rules, {name: name}).getData());
-}
-
-
+//format join game buttons
 function formatButtons(data) {
     $(data[1]).find('button').on('click', function (ev) {
         ev.preventDefault();
-        joinGame(this.getAttribute('data-gameId'));
+        GameFunc.joinGame(this.getAttribute('data-gameId'));
     });
 }
 
+//format the board
 function formatPlayer(data) {
 
     var player = _.find(data, function (ele) {
@@ -164,7 +105,7 @@ function formatPlayer(data) {
 
             rowData.forEach(function (card) {
                 if (card.length === 2) {
-                    var cardEle = $(cardHTML(card));
+                    var cardEle = $(Util.cardHTML(card));
                     cardEle.attr('data-card', card);
                     cardCount++;
                     //set to draggable if unplayed and your hand
@@ -174,7 +115,7 @@ function formatPlayer(data) {
                         cardEle.addClass('playable');
                     } else if (row.hasClass('unplayed')) {
                         //hide unplayed if not yours
-                        cardEle = $(cardHTML('back'));
+                        cardEle = $(Util.cardHTML('back'));
                         cardEle.prop('draggable', false);
                     }
                     row.append(cardEle);
@@ -183,7 +124,7 @@ function formatPlayer(data) {
             var buffer = size - cardCount;
 
             for (var i = 0; i < buffer; i++) {
-                var cardEle = $(cardHTML());
+                var cardEle = $(Util.cardHTML());
                 cardEle.attr('ondrop', 'dropCard(event)');
                 cardEle.attr('ondragover', 'dragOver(event)');
                 cardEle.attr('ondragleave', 'dragLeave(event)');
@@ -202,16 +143,7 @@ function formatPlayer(data) {
     }
 }
 
-function cardHTML(card) {
-    if (card === 'back') {
-        return '<div class="playingCard cardBack"><img draggable="false" src="images/back.gif"/></div>';
-    } else if (card) {
-        return new PlayingCard(card).getHTML();
-    } else {
-        return '<div class="playingCard"></div>';
-    }
-}
-
+//on card drop (after drag)
 function dropCard(ev) {
     var $row = $(ev.target).parent()
         , rowNum, row
@@ -236,7 +168,7 @@ function dropCard(ev) {
     currentGame.game.endTurn();
 
     /* sync the game */
-    gameSync();
+    GameFunc.gameSync();
 
 }
 function dragOver(ev) {
@@ -258,11 +190,12 @@ function dragCard(ev) {
 function startGame() {
     currentGame.game.startGame();
     currentGame.game.deal();
-    gameSync();
+    GameFunc.gameSync();
 }
 
-function leaveGame() {
+function leave() {
     currentGame.game.removePlayer(username);
-    gameSync();
-    leave();
+    GameFunc.gameSync();
+    GameFunc.leaveGame();
 }
+
