@@ -35,6 +35,12 @@ Configure and Install Deps
 ./install.sh
 ```
 
+Use grunt to initialize app in the environmnet desired (dev will run lin/tests)
+
+```
+grunt [dev|prod]
+```
+
 to start app:
 
 ```
