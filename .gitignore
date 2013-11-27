@@ -6,3 +6,5 @@ poker-evaluator/
 .css/
 .idea/
 logs/
+app/index.html
+app/scripts/js/*.min.js

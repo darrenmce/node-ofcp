@@ -30,7 +30,14 @@ module.exports = function (grunt) {
                 separator: ';'
             },
             dist: {
-                src: ['app/scripts/js/*.js'],
+                src: ['app/scripts/js/vendor/*.js'
+                    ,'app/scripts/js/deck.js'
+                    ,'app/scripts/js/player.js'
+                    ,'app/scripts/js/game.js'
+                    ,'app/scripts/js/rules.js'
+                    ,'app/scripts/js/util.js'
+                    ,'app/scripts/js/game-func.js'
+                    ,'app/scripts/js/main.js'],
                 dest: 'temp/<%= pkg.name %>.js'
             }
         },
@@ -44,7 +51,29 @@ module.exports = function (grunt) {
                 }
             }
         },
-        clean: ["temp"]
+        clean: ["temp"],
+        replace: {
+            dev: {
+                options: {
+                    variables: {
+                        'include': '<%= grunt.file.read("app/templates/dev-scripts.html") %>'
+                    }
+                },
+                files: [
+                    {src: ['app/templates/index.html'], dest: 'app/index.html'}
+                ]
+            },
+            prod: {
+                options: {
+                    variables: {
+                        'include': '<%= grunt.file.read("app/templates/prod-scripts.html") %>'
+                    }
+                },
+                files: [
+                    {src: ['app/templates/index.html'], dest: 'app/index.html'}
+                ]
+            }
+        }
     });
 
     // These plugins provide necessary tasks.
@@ -53,9 +82,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-replace');
 
-    // Default task.
-    grunt.registerTask('default', ['jshint', 'qunit']);
-    grunt.registerTask('compile', ['concat', 'uglify', 'clean']);
+    grunt.registerTask('dev', ['replace:dev','jshint','qunit']);
+    grunt.registerTask('prod', ['concat', 'uglify', 'replace:prod', 'clean']);
 
 };
