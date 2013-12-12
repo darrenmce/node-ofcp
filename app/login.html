@@ -1,25 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login Screen</title>
+    <title>OFC Pineapple Login</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css"/>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/js/bootstrap.min.js"></script>
 </head>
 <body>
 
-<div>
-    <h3>Login:</h3>
-
-    <form>
-        User Name: <input id="txt_username" type="text" maxlength="20"/><br/>
-        Password: <input id="txt_password" type="password" maxlength="20"/><br/>
-
-        <div id="emailField" style="display:none;">Email: <input id="txt_email" type="email"/><br/></div>
-        <button id="btn_login" type="submit">Login</button>
-        <button id="btn_register">Register</button>
-    </form>
-    <div id="loginResult"></div>
-
+<div class="container" style="padding-top: 5%;">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">OFC Pineapple Login</h3>
+                </div>
+                <div class="panel-body">
+                    <form accept-charset="UTF-8" role="form">
+                        <fieldset>
+                            <div class="form-group">
+                                <input class="form-control" placeholder="Username" id="txt_username" type="text" value=""/>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" placeholder="Password" id="txt_password" type="password" value=""/>
+                            </div>
+                            <div class="form-group" style="display:none;" id="emailField">
+                                <input class="form-control" placeholder="Email" id="txt_email" type="email"/>
+                            </div>
+                            <span id="loginResult" class="text-danger"></span>
+                            <input class="btn btn-lg btn-success btn-block" type="submit" value="Login" id="btn_login"/>
+                        </fieldset>
+                    </form>
+                    <hr/>
+                    <span id="registrationResult" class="text-danger"></span>
+                    <input class="btn btn-lg btn-info btn-block" type="button" value="Register" id="btn_register"/>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 <!-- Get Server Config -->
 <script src="config"></script>
@@ -28,32 +49,35 @@
     $('#btn_login').on('click', function (ev) {
         ev.preventDefault();
         $('#emailField').hide();
-        $('#loginResult').html('');
+        $('#loginResult, #registrationResult').text('');
 
         $.post(server + '/login', {username: $('#txt_username').val().trim(), password: $('#txt_password').val().trim()},function () {
             location.reload(true);
         }).fail(function () {
-                    $('#loginResult').html($('<h3>Login Failed.</h3>').css('color', 'red'));
-                    $('input').val('');
+                    $('#loginResult').text('Login Failed.');
+                    $('input.form-control').val('');
                 });
     });
 
     $('#btn_register').on('click', function(ev) {
         ev.preventDefault();
-        var email = $('#txt_email').val().trim();
-       if (email.length > 0) {
-           $.post(server + '/register', {username: $('#txt_username').val().trim(), password: $('#txt_password').val().trim(), email: email},function () {
-               $('#loginResult').html($('<h3>Registration Successful.</h3>').css('color', 'green'))
-               $('input').val('');
+        $('#loginResult').text('');
+        var email = $('#txt_email').val().trim()
+            , username=$('#txt_username').val().trim()
+            , password=$('#txt_password').val().trim();
+       if (email.length > 0 && username.length > 0 && password.length > 0) {
+           $.post(server + '/register', {username: username, password: password, email: email},function () {
+               $('#registrationResult').removeClass('text-danger').addClass('text-success').text('Registration Successful.');
+
+               $('input.form-control').val('');
                $('#emailField').hide();
            }).fail(function () {
-                       $('#loginResult').html($('<h3>Registration Failed. User exists, or fields not filled out.</h3>').css('color', 'red'));
-
+                       $('#registrationResult').removeClass('text-success').addClass('text-danger').text('Registration Failed. User exists, or fields not filled out.');
                    });
 
        } else {
            $('#emailField').show();
-           $('#loginResult').html($('<h3>Please enter your email and press register again.</h3>').css('color', 'blue'));
+           $('#registrationResult').removeClass('text-danger').addClass('text-success').text('Please enter your email and press register again.');
        }
     });
 </script>
