@@ -76,10 +76,27 @@ function startApp() {
     });
   });
 
+
   //reveal board
   $('#div_game').show();
 }
 
+//set rainbow blinky text! :D
+function initBlinker(text) {
+  $('.rainbow-blinky').each(function () {
+    clearTimeout($(this).data('blinker'));
+    var colourMap = ['blink_green', 'blink_red', 'blink_yellow', 'blink_blue', 'blink_orange', 'blink_purple'];
+    var $ele = $(this);
+    var incr = 0;
+    $ele.data('blinker', setInterval(function () {
+      incr++;
+      if (incr >= colourMap.length) {
+        incr = 0;
+      }
+      $ele.html('<span class="'+colourMap[incr]+'">'+text[0].data+'</span>');
+    }, 100));
+  });
+}
 
 //format the board
 function formatPlayer(data) {

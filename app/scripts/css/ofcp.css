@@ -1,40 +1,63 @@
 .div_player {
-    border: 1px solid black;
-    border-radius: 5px;
-    padding: 5px;
 }
 
 .dragover {
     background-color: green !important;
 }
+
 .playable {
     cursor: pointer;
 }
-.player_them {
-    color: maroon;
-}
-.player_you {
-    color: green;
-}
-.player_you:after {
-    content: ' [YOU]';
-}
+
 .unplayed {
     height: 100px;
 }
+
 .board {
     background-color: darkgreen;
+    padding: 5px 20px 5px 20px;
 }
+
 .cardBack {
     background-color: red;
 }
+
 .cardBack img {
     height: inherit;
     width: auto;
 }
+
 .winnerRow {
     border: 10px solid green;
 }
+
 .loserRow {
     border: 10px solid red;
+}
+
+.rainbow-blinky {
+    font-weight: bolder;
+}
+
+.blink_green {
+    color: green;
+}
+
+.blink_red {
+    color: red;
+}
+
+.blink_yellow {
+    color: yellow;
+}
+
+.blink_blue {
+    color: blue;
+}
+
+.blink_orange{
+    color: orange;
+}
+.blink_purple {
+    color: purple;
 }
