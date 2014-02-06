@@ -122,7 +122,7 @@ function postEvaluate(req, res) {
 
 function getConfig(req, res) {
     res.set('Content-Type', 'text/javascript');
-    res.send('var server = "' + SERVER_CONFIG.ADDRESS + ':' + SERVER_CONFIG.PORT + '";');
+    res.send('var server = "' + SERVER_CONFIG.REQUEST_ADDRESS + '";');
 }
 
 app.get('/config', getConfig);

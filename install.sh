@@ -17,8 +17,9 @@ if [ "$1" != "firebase" ] && [ "$1" != "mongo" ]
   then
     read -p "Enter your server address (http://123.123.123.123): " server_address
     read -p "Enter your server port (3000): " server_port
+    read -p "Enter your proxy address (optional): " proxy_address
     echo "Creating SERVER_CONFIG.json..."
-    printf "{\n\t\"ADDRESS\": \"$server_address\",\n\t\"PORT\": \"$server_port\"\n}\n" > ./SERVER_CONFIG.json
+    printf "{\n\t\"ADDRESS\": \"$server_address\",\n\t\"PORT\": \"$server_port\",\n\t\"REQUEST_ADDRESS\": \"$proxy_address\"\n}\n" > ./SERVER_CONFIG.json
 fi
 if [ "$1" != "firebase" ] && [ "$1" != "server" ] && [ "$1" != "mongo" ]
   then
