@@ -58,6 +58,13 @@ Player.prototype = {
             totalScore: this.totalScore
         };
     },
+    getBoard: function() {
+      return {
+        backRow: this.backRow,
+        midRow: this.midRow,
+        frontRow: this.frontRow
+      }
+    },
     setData: function (data) {
         this.name = data.name || 'unnamed';
         this.backRow = data.backRow || [];

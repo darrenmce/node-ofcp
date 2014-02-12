@@ -6,10 +6,12 @@ var pokerEval = require('./poker-evaluator');
 
 /* Lib */
 var loginFunc = require('./lib/login.js');
+var aiFunc = require('./lib/ai.js');
 
 var FIREBASE_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/FIREBASE_CONFIG.json', 'utf8'));
 var SERVER_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/SERVER_CONFIG.json', 'utf8'));
 var MONGO_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/MONGO_CONFIG.json', 'utf8'));
+var AI_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/AI_CONFIG.json', 'utf8'));
 
 var FIREBASE = {
     tokenGenerator: new FirebaseTokenGenerator(FIREBASE_CONFIG.SECRET),
@@ -39,6 +41,11 @@ app.post('/register', login.register.bind(login));
 app.get('/logout', login.logout.bind(login));
 /* Uses context of login object */
 app.get('/getFireBase', login.getFireBase.bind(login));
+
+/* set up AI API */
+var ai = new aiFunc(AI_CONFIG.host, AI_CONFIG.path);
+
+app.post('/ai', ai.getWrapper.bind(ai));
 
 
 function getScript(req, res) {
@@ -122,7 +129,7 @@ function postEvaluate(req, res) {
 
 function getConfig(req, res) {
     res.set('Content-Type', 'text/javascript');
-    res.send('var server = "' + SERVER_CONFIG.REQUEST_ADDRESS + '";');
+    res.send('var server = "' + (SERVER_CONFIG.REQUEST_ADDRESS || (SERVER_CONFIG.ADDRESS+':'+SERVER_CONFIG.PORT)) + '";');
 }
 
 app.get('/config', getConfig);
