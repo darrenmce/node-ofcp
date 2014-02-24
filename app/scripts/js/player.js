@@ -63,7 +63,7 @@ Player.prototype = {
         backRow: this.backRow,
         midRow: this.midRow,
         frontRow: this.frontRow
-      }
+      };
     },
     setData: function (data) {
         this.name = data.name || 'unnamed';

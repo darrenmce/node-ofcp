@@ -219,3 +219,11 @@ function leave() {
   GameFunc.leaveGame();
 }
 
+function addAi() {
+  currentGame.game.addPlayer('ai','ai');
+  GameFunc.gameSync();
+}
+
+function playAi() {
+  currentGame.game.aiTurn();
+}

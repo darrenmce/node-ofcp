@@ -61,6 +61,9 @@
         <!-- ko if: game().game && game().game.gameStatus && !game().game.gameStatus.started -->
         <button id="startGame" onclick="startGame();">Start Game</button>
         <!-- /ko -->
+        <!-- ko if: game().game && game().game.gameStatus && !game().game.gameStatus.started && game().game.players.length===1-->
+        <button id="addAi" onclick="addAi();">Add AI</button>
+        <!-- /ko -->
     </div>
     <div class="row" id="div_players" data-bind="foreach: {data: game().game.players, afterRender: formatPlayer}">
         <div class="div_player col-lg-5">
@@ -76,18 +79,27 @@
                             <span class="strong" data-bind="text: totalScore"></span>
                         </div>
                         <div class="col-md-4 text-center">
-                            <span class="rainbow-blinky strong" data-bind="template: {if: fantasyland, afterRender: initBlinker}">FANTASYLAND!!</span>
+                            <span class="rainbow-blinky strong"
+                                  data-bind="template: {if: fantasyland, afterRender: initBlinker}">FANTASYLAND!!</span>
                         </div>
                         <div class="col-md-4 text-right">
                             <!-- ko if: $parent.game().game.gameStatus.started -->
-                            <span class="strong" data-bind="if: playerId === $parent.game().game.gameStatus.turn && playerId === username">
+                            <span class="strong"
+                                  data-bind="if: playerId === $parent.game().game.gameStatus.turn && playerId === username">
                                 Your Turn</span>
-                            <span class="strong" data-bind="if: playerId === $parent.game().game.gameStatus.turn && playerId !== username">
+                            <span class="strong"
+                                  data-bind="if: playerId === $parent.game().game.gameStatus.turn && playerId !== username">
                                 Their Turn</span>
                             <!-- /ko -->
                         </div>
                     </div>
                     <hr/>
+                    <!-- ko if: playerId === 'ai' && $parent.game().game.gameStatus.turn === 'ai' && $parent.game().game.gameStatus.started-->
+                    <div class="row text-center">
+                        <button id="playAi" onclick="playAi();">Play AI Turn</button>
+                    </div>
+                    <hr/>
+                    <!-- /ko -->
                     <div class="container board">
                         <div class="row frontRow" data-bind="text: frontRow, css: {winnerRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.frontRow.playerId === playerId,
                                                                          loserRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.frontRow.playerId !== playerId}"></div>
