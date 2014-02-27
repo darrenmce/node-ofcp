@@ -61,7 +61,7 @@
         <!-- ko if: game().game && game().game.gameStatus && !game().game.gameStatus.started -->
         <button id="startGame" onclick="startGame();">Start Game</button>
         <!-- /ko -->
-        <!-- ko if: game().game && game().game.gameStatus && !game().game.gameStatus.started && game().game.players.length===1-->
+        <!-- ko if: game().game && game().game.gameStatus && !game().game.gameStatus.started && game().game.players.length < 3-->
         <button id="addAi" onclick="addAi();">Add AI</button>
         <!-- /ko -->
     </div>
