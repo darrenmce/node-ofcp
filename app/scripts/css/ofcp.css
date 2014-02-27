@@ -61,3 +61,7 @@
 .blink_purple {
     color: purple;
 }
+.scores span {
+    color: #f5f5f5;
+    font-family: "Arial Black", Gadget, sans-serif;
+}

@@ -2,11 +2,11 @@
 var express = require('express');
 var FirebaseTokenGenerator = require('firebase-token-generator');
 var fs = require('fs');
-var pokerEval = require('./poker-evaluator');
 
 /* Lib */
 var loginFunc = require('./lib/login.js');
 var aiFunc = require('./lib/ai.js');
+var evaluate = require('./lib/evaluate.js');
 
 var FIREBASE_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/FIREBASE_CONFIG.json', 'utf8'));
 var SERVER_CONFIG = JSON.parse(fs.readFileSync(__dirname + '/SERVER_CONFIG.json', 'utf8'));
@@ -104,28 +104,7 @@ function getImage(req, res) {
     }
 }
 
-function evaluate(players) {
-    return players.map(function (player) {
-        return {
-            playerId: player.playerId,
-            frontRow: pokerEval.evalHand(player.frontRow),
-            midRow: pokerEval.evalHand(player.midRow),
-            backRow: pokerEval.evalHand(player.backRow)
-        };
-    });
-}
 
-function postEvaluate(req, res) {
-    if (req.session.username) {
-        if (req.body && req.body.players) {
-            res.send(evaluate(req.body.players));
-        } else {
-            res.send(500, 'Incorrect');
-        }
-    } else {
-        res.send(403, 'log in first.');
-    }
-}
 
 function getConfig(req, res) {
     res.set('Content-Type', 'text/javascript');
@@ -134,7 +113,7 @@ function getConfig(req, res) {
 
 app.get('/config', getConfig);
 
-app.post('/eval', postEvaluate);
+app.post('/eval', evaluate.postEvaluate.bind(evaluate));
 
 app.get('/scripts/js/:script', getScript);
 app.get('/scripts/css/:css', getCss);

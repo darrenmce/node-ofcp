@@ -104,7 +104,7 @@
                         <div class="row frontRow" data-bind="text: frontRow, css: {winnerRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.frontRow.playerId === playerId,
                                                                          loserRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.frontRow.playerId !== playerId}"></div>
                         <!--ko if: !_.isEmpty($data.evalHands) && $data.evalHands.frontRow -->
-                        <div>
+                        <div class="scores">
                             <span data-bind="text: evalHands.frontRow.handName"></span>: <span
                                 data-bind="text: evalHands.bonus.frontRow"></span>
                         </div>
@@ -112,7 +112,7 @@
                         <div class="row midRow" data-bind="text: midRow, css: {winnerRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.midRow.playerId === playerId,
                                                                          loserRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.midRow.playerId !== playerId}"></div>
                         <!--ko if: !_.isEmpty($data.evalHands) && $data.evalHands.midRow -->
-                        <div>
+                        <div class="scores">
                             <span data-bind="text: evalHands.midRow.handName"></span>: <span
                                 data-bind="text: evalHands.bonus.midRow"></span>
                         </div>
@@ -120,7 +120,7 @@
                         <div class="row backRow" data-bind="text: backRow, css: {winnerRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.backRow.playerId === playerId,
                                                                          loserRow: !_.isEmpty($parent.game().game.gameStatus.winners) && $parent.game().game.gameStatus.winners.backRow.playerId !== playerId}"></div>
                         <!--ko if: !_.isEmpty($data.evalHands) && $data.evalHands.backRow -->
-                        <div>
+                        <div class="scores">
                             <span data-bind="text: evalHands.backRow.handName"></span>: <span
                                 data-bind="text: evalHands.bonus.backRow"></span>
                         </div>
